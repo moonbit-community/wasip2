@@ -4,6 +4,7 @@
     "wasm"
   ],
   "import": [
-    "peter-jerry-ye/demo/internal/ev"
+    "peter-jerry-ye/demo/internal/ev",
+    "peter-jerry-ye/demo/internal/wasi/clocks/monotonicClock"
   ]
 }

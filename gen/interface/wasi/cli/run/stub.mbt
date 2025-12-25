@@ -10,4 +10,9 @@ pub fn run() -> Result[Unit, Unit] {
 pub async fn async_run() -> Unit {
   @stdio.stdout.write("Hello World!\n")
   @stdio.stdout.write("This is a test of WASI stdio.\n")
+  for i in 0..<5 {
+    @stdio.stdout.write("Tick " + (5 - i).to_string() + "\n")
+    @demo.sleep(1000)
+  }
+  @stdio.stdout.write("Boom!\n")
 }

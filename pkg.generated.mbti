@@ -4,6 +4,8 @@ package "peter-jerry-ye/demo"
 // Values
 pub fn async_run(async () -> Unit) -> Result[Unit, Unit]
 
+pub async fn sleep(Int) -> Unit
+
 pub async fn[X] with_task_group(async (TaskGroup[X]) -> X) -> X
 
 // Errors
