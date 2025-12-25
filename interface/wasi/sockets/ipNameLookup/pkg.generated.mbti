@@ -1,0 +1,27 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/demo/interface/wasi/sockets/ipNameLookup"
+
+import(
+  "peter-jerry-ye/demo/interface/wasi/io/poll"
+  "peter-jerry-ye/demo/interface/wasi/sockets/network"
+)
+
+// Values
+pub fn resolve_addresses(@network.Network, String) -> Result[ResolveAddressStream, @network.ErrorCode]
+
+// Errors
+
+// Types and methods
+pub(all) struct ResolveAddressStream(Int)
+pub fn ResolveAddressStream::drop(Self) -> Unit
+#deprecated
+pub fn ResolveAddressStream::inner(Self) -> Int
+pub fn ResolveAddressStream::resolve_next_address(Self) -> Result[@network.IpAddress?, @network.ErrorCode]
+pub fn ResolveAddressStream::subscribe(Self) -> @poll.Pollable
+pub impl Eq for ResolveAddressStream
+pub impl Show for ResolveAddressStream
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/demo/gen/interface/wasi/cli/run"
+
+// Values
+pub fn run() -> Result[Unit, Unit]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,17 @@
+{
+      "warn-list": "-44",
+      "import": [
+      { "path" : "peter-jerry-ye/demo/gen/interface/wasi/cli/run", "alias" : "run" }
+      ],
+      "link": {
+            "wasm": {
+                  "export-memory-name": "memory",
+                  "heap-start-address": 16,
+                  "exports": [
+                  "mbt_ffi_cabi_realloc:cabi_realloc",
+                  "wasmExportRun:wasi:cli/run@0.2.9#run"
+                  ]
+            }
+      }
+
+}

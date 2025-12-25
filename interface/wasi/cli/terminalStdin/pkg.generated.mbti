@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/demo/interface/wasi/cli/terminalStdin"
+
+import(
+  "peter-jerry-ye/demo/interface/wasi/cli/terminalInput"
+)
+
+// Values
+pub fn get_terminal_stdin() -> @terminalInput.TerminalInput?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

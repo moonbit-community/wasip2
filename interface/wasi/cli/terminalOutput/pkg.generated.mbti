@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/demo/interface/wasi/cli/terminalOutput"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct TerminalOutput(Int)
+pub fn TerminalOutput::drop(Self) -> Unit
+#deprecated
+pub fn TerminalOutput::inner(Self) -> Int
+pub impl Eq for TerminalOutput
+pub impl Show for TerminalOutput
+
+// Type aliases
+
+// Traits
+
