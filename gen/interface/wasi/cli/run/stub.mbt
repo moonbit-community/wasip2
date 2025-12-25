@@ -3,5 +3,11 @@
 ///|
 /// Run the program.
 pub fn run() -> Result[Unit, Unit] {
-  @demo.async_run(fn() { () })
+  @demo.async_run(async_run)
+}
+
+///|
+pub async fn async_run() -> Unit {
+  @stdio.stdout.write("Hello World!\n")
+  @stdio.stdout.write("This is a test of WASI stdio.\n")
 }

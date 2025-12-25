@@ -2,6 +2,8 @@
 package "peter-jerry-ye/demo/gen/interface/wasi/cli/run"
 
 // Values
+pub async fn async_run() -> Unit
+
 pub fn run() -> Result[Unit, Unit]
 
 // Errors

@@ -1,0 +1,27 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/demo/stdio"
+
+import(
+  "peter-jerry-ye/demo/io"
+)
+
+// Values
+pub let stderr : Output
+
+pub let stdin : Input
+
+pub let stdout : Output
+
+// Errors
+
+// Types and methods
+type Input
+pub impl @io.Reader for Input
+
+type Output
+pub impl @io.Writer for Output
+
+// Type aliases
+
+// Traits
+

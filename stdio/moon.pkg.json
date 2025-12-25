@@ -1,0 +1,10 @@
+{
+  "import": [
+    "peter-jerry-ye/demo/internal/ev",
+    "peter-jerry-ye/demo/io",
+    "peter-jerry-ye/demo/internal/wasi/io/streams",
+    "peter-jerry-ye/demo/internal/wasi/cli/stdin",
+    "peter-jerry-ye/demo/internal/wasi/cli/stdout",
+    "peter-jerry-ye/demo/internal/wasi/cli/stderr"
+  ]
+}
