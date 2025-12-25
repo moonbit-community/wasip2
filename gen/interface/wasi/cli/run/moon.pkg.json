@@ -1,7 +1,0 @@
-{
-  "warn-list": "-44",
-  "import": [
-    "peter-jerry-ye/demo",
-    "peter-jerry-ye/demo/stdio"
-  ]
-}
