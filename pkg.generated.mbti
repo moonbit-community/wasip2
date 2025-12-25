@@ -1,0 +1,356 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/demo/ffi"
+
+// Values
+pub fn _async_debug(String) -> Unit
+
+pub fn bytes2ptr(FixedArray[Byte]) -> Int
+
+pub fn cabi_realloc(Int, Int, Int, Int) -> Int
+
+pub fn callback(Int, Int, Int) -> Int
+
+pub fn cb(Int, Int, Int) -> Int
+
+pub fn context_get() -> Int
+
+pub fn context_set(Int) -> Unit
+
+pub fn current_coroutine() -> Coroutine
+
+pub fn current_task() -> Task
+
+pub fn double_array2ptr(FixedArray[Double]) -> Int
+
+pub fn extend16(Int) -> Int
+
+pub fn extend8(Int) -> Int
+
+pub fn f32_to_i32(Float) -> Int
+
+pub fn f32_to_i64(Float) -> Int64
+
+pub fn float_array2ptr(FixedArray[Float]) -> Int
+
+pub fn free(Int) -> Unit
+
+pub fn has_immediately_ready_task() -> Bool
+
+pub fn int64_array2ptr(FixedArray[Int64]) -> Int
+
+pub fn int_array2ptr(FixedArray[Int]) -> Int
+
+pub fn is_being_cancelled() -> Bool
+
+pub fn load16(Int) -> Int
+
+pub fn load16_u(Int) -> Int
+
+pub fn load32(Int) -> Int
+
+pub fn load64(Int) -> Int64
+
+pub fn load8(Int) -> Int
+
+pub fn load8_u(Int) -> Int
+
+pub fn loadf32(Int) -> Float
+
+pub fn loadf64(Int) -> Double
+
+pub fn malloc(Int) -> Int
+
+pub fn[T] new_future(FutureVTable[T]) -> (FutureReader[T], FutureWriter[T])
+
+pub fn[T] new_stream(StreamVTable[T]) -> (StreamReader[T], StreamWriter[T])
+
+pub fn no_more_work() -> Bool
+
+pub async fn pause() -> Unit raise Cancelled
+
+pub async fn protect_from_cancel(async () -> Unit) -> Unit
+
+pub fn ptr2bytes(Int, Int) -> FixedArray[Byte]
+
+pub fn ptr2double_array(Int, Int) -> FixedArray[Double]
+
+pub fn ptr2float_array(Int, Int) -> FixedArray[Float]
+
+pub fn ptr2int64_array(Int, Int) -> FixedArray[Int64]
+
+pub fn ptr2int_array(Int, Int) -> FixedArray[Int]
+
+pub fn ptr2str(Int, Int) -> String
+
+pub fn ptr2uint64_array(Int, Int) -> FixedArray[UInt64]
+
+pub fn ptr2uint_array(Int, Int) -> FixedArray[UInt]
+
+pub fn reschedule() -> Unit
+
+pub fn store16(Int, Int) -> Unit
+
+pub fn store32(Int, Int) -> Unit
+
+pub fn store64(Int, Int64) -> Unit
+
+pub fn store8(Int, Int) -> Unit
+
+pub fn storef32(Int, Float) -> Unit
+
+pub fn storef64(Int, Double) -> Unit
+
+pub fn str2ptr(String) -> Int
+
+pub async fn suspend() -> Unit raise Cancelled
+
+pub async fn suspend_for_future_read(Int, Int) -> Unit
+
+pub async fn suspend_for_future_write(Int) -> Bool
+
+pub async fn suspend_for_stream_read(Int, Int) -> (Int, Bool)
+
+pub async fn suspend_for_stream_write(Int, Int) -> (Int, Bool)
+
+pub async fn suspend_for_subtask(Int, () -> Unit) -> Unit
+
+pub fn task_cancel() -> Unit
+
+pub let task_map : Map[Int, Task]
+
+pub fn uint64_array2ptr(FixedArray[UInt64]) -> Int
+
+pub fn uint_array2ptr(FixedArray[UInt]) -> Int
+
+pub async fn[X] with_task_group(async (TaskGroup[X]) -> X) -> X
+
+pub fn with_waitableset(async () -> Unit) -> Int
+
+// Errors
+#deprecated
+pub suberror AlreadyTerminated
+pub impl Show for AlreadyTerminated
+
+pub(all) suberror Cancelled
+pub impl Show for Cancelled
+
+pub suberror OpCancelled {
+  SubTaskCancelled(before_started~ : Bool)
+  StreamWriteCancelled
+  StreamReadCancelled
+  FutureWriteCancelled
+  FutureReadCancelled
+}
+
+pub suberror StreamCancelled (Int, Cancelled)
+pub impl Show for StreamCancelled
+
+// Types and methods
+pub(all) struct Cleanup {
+  address : Int
+  size : Int
+  align : Int
+}
+
+type Coroutine
+
+pub(all) enum Event {
+  None
+  Subtask
+  StreamRead
+  StreamWrite
+  FutureRead
+  FutureWrite
+  TaskCancel
+}
+pub fn Event::decode(Int) -> Self
+pub fn Event::encode(Self) -> Int
+pub impl Eq for Event
+pub impl Show for Event
+
+pub(all) struct FutureR[X](async () -> X)
+#deprecated
+pub fn[X] FutureR::inner(Self[X]) -> async () -> X
+
+pub struct FutureReader[T] {
+  handle : Int
+  vtable : FutureVTable[T]
+  mut code : Int?
+  mut dropped : Bool
+  memory_refs : Array[Int]
+}
+pub fn[T] FutureReader::free(Self[T], Int) -> Unit
+pub fn[T] FutureReader::lift(Self[T], Int) -> T
+pub fn[T] FutureReader::lower_read(Self[T], Int) -> Int
+pub fn[T] FutureReader::malloc(Self[T]) -> Int
+pub fn[T] FutureReader::new(Int, FutureVTable[T]) -> Self[T]
+pub async fn[T] FutureReader::read(Self[T]) -> T
+pub impl[T] Eq for FutureReader[T]
+pub impl[T] Waitable for FutureReader[T]
+
+pub struct FutureVTable[T] {
+  new : () -> UInt64
+  read : (Int, Int) -> Int
+  write : (Int, Int) -> Int
+  cancel_read : (Int) -> Int
+  cancel_write : (Int) -> Int
+  drop_readable : (Int) -> Unit
+  drop_writable : (Int) -> Unit
+  malloc : (Int) -> Int
+  free : (Int) -> Unit
+  lift : (Int) -> T
+  lower : (T, Int) -> Unit
+}
+pub fn[T] FutureVTable::new(() -> UInt64, (Int, Int) -> Int, (Int, Int) -> Int, (Int) -> Int, (Int) -> Int, (Int) -> Unit, (Int) -> Unit, (Int) -> Int, (Int) -> Unit, (Int) -> T, (T, Int) -> Unit) -> Self[T]
+
+pub struct FutureWriter[T] {
+  handle : Int
+  vtable : FutureVTable[T]
+  mut code : Int?
+  mut dropped : Bool
+  memory_refs : Array[Int]
+}
+pub fn[T] FutureWriter::free(Self[T], Int) -> Unit
+pub fn[T] FutureWriter::lower(Self[T], T, Int) -> Unit
+pub fn[T] FutureWriter::lower_write(Self[T], Int) -> Int
+pub fn[T] FutureWriter::malloc(Self[T]) -> Int
+pub fn[T] FutureWriter::new(Int, FutureVTable[T]) -> Self[T]
+pub async fn[T] FutureWriter::write(Self[T], T) -> Unit
+pub impl[T] Eq for FutureWriter[T]
+pub impl[T] Waitable for FutureWriter[T]
+
+pub(all) struct StreamR[X] {
+  read : async (Int) -> ArrayView[X]?
+  close : async () -> Unit
+}
+
+pub struct StreamReader[T] {
+  handle : Int
+  vtable : StreamVTable[T]
+  mut code : Int?
+  mut dropped : Bool
+  memory_refs : Array[Int]
+}
+pub fn[T] StreamReader::new(Int, StreamVTable[T]) -> Self[T]
+pub async fn[T] StreamReader::read(Self[T], FixedArray[T], offset? : Int, Int) -> Int
+pub impl[T] Eq for StreamReader[T]
+pub impl[T] Waitable for StreamReader[T]
+
+pub struct StreamVTable[T] {
+  new : () -> UInt64
+  read : (Int, Int, Int) -> Int
+  write : (Int, Int, Int) -> Int
+  cancel_read : (Int) -> Int
+  cancel_write : (Int) -> Int
+  drop_readable : (Int) -> Unit
+  drop_writable : (Int) -> Unit
+  malloc : (Int) -> Int
+  free : (Int) -> Unit
+  lift : (Int, Int) -> FixedArray[T]
+  lower : (FixedArray[T]) -> Int
+}
+pub fn[T] StreamVTable::new(() -> UInt64, (Int, Int, Int) -> Int, (Int, Int, Int) -> Int, (Int) -> Int, (Int) -> Int, (Int) -> Unit, (Int) -> Unit, (Int) -> Int, (Int) -> Unit, (Int, Int) -> FixedArray[T], (FixedArray[T]) -> Int) -> Self[T]
+
+pub(all) struct StreamW[X] {
+  write : async (ArrayView[X]) -> Int
+  close : async () -> Unit
+}
+
+type StreamWrite[X]
+pub async fn[X] StreamWrite::get_stream(Self[X]) -> StreamW[X]
+pub async fn[X] StreamWrite::put_stream(Self[X], StreamW[X]) -> Unit
+pub impl[X : Default] Default for StreamWrite[X]
+
+pub struct StreamWriter[T] {
+  handle : Int
+  vtable : StreamVTable[T]
+  mut code : Int?
+  mut dropped : Bool
+  memory_refs : Array[Int]
+}
+pub fn[T] StreamWriter::new(Int, StreamVTable[T]) -> Self[T]
+pub async fn[T] StreamWriter::write(Self[T], FixedArray[T]) -> Int
+pub impl[T] Eq for StreamWriter[T]
+pub impl[T] Waitable for StreamWriter[T]
+
+pub struct Subtask {
+  handle : Int
+  mut code : Int?
+  mut dropped : Bool
+}
+pub fn Subtask::from_handle(Int, code? : Int) -> Self
+pub impl Eq for Subtask
+pub impl Waitable for Subtask
+
+pub(all) enum SubtaskStatus {
+  Starting(Int)
+  Started(Int)
+  Returned(Int)
+  StartCancelled(Int)
+  ReturnCancelled(Int)
+}
+pub fn SubtaskStatus::decode(Int) -> Self
+pub fn SubtaskStatus::handle(Self) -> Int
+pub impl Eq for SubtaskStatus
+pub impl Show for SubtaskStatus
+
+type Task
+pub fn Task::add_defer(Self, () -> Unit raise) -> Unit
+pub fn[T : Waitable] Task::add_waitable(Self, T, Coroutine) -> Unit
+pub fn Task::blocking_poll(Self) -> (Int, Int, Int)
+pub fn Task::blocking_wait(Self) -> (Int, Int, Int)
+pub fn[T : Waitable] Task::cancel_waitable(Self, T) -> Unit
+pub fn Task::drop(Self) -> Unit
+pub fn[T : Waitable] Task::drop_waitable(Self, T) -> Unit
+pub fn Task::from_raw(Int) -> Self
+pub fn Task::handle(Self) -> Int
+pub fn Task::is_done(Self) -> Bool
+pub fn Task::is_fail(Self) -> Error?
+pub fn Task::new() -> Self
+pub fn Task::no_wait(Self) -> Bool
+pub fn[T : Waitable] Task::remove_waitable(Self, T) -> Unit
+pub fn Task::spawn(Self, async () -> Unit) -> Unit
+pub async fn Task::wait(Self, async () -> Unit) -> Unit
+pub fn Task::with_waitable_set(Self, async (Self) -> Unit, is_drop? : Bool) -> Coroutine
+
+type TaskGroup[X]
+pub fn[X] TaskGroup::add_defer(Self[X], async () -> Unit) -> Unit
+pub fn[X] TaskGroup::return_immediately(Self[X], X) -> Unit raise
+pub fn[G, X] TaskGroup::spawn(Self[G], async () -> X, no_wait? : Bool, allow_failure? : Bool) -> Task_[X]
+pub fn[X] TaskGroup::spawn_bg(Self[X], async () -> Unit, no_wait? : Bool, allow_failure? : Bool) -> Unit
+
+type Task_[X]
+pub fn[X] Task_::cancel(Self[X]) -> Unit
+pub fn[X] Task_::try_wait(Self[X]) -> X? raise
+pub async fn[X] Task_::wait(Self[X]) -> X
+
+type WaitableSet
+pub impl Eq for WaitableSet
+pub impl Hash for WaitableSet
+pub impl Show for WaitableSet
+
+pub(all) enum WaitableStatus {
+  Completed(Int)
+  Dropped(Int)
+  Cancelled(Int)
+  Blocking
+}
+pub fn WaitableStatus::count(Int) -> Int
+pub fn WaitableStatus::decode(Int) -> Self
+pub impl Eq for WaitableStatus
+pub impl Show for WaitableStatus
+
+// Type aliases
+
+// Traits
+pub(open) trait Any {
+}
+
+pub(open) trait Waitable {
+  update(Self, code~ : Int) -> Unit
+  cancel(Self) -> Unit
+  drop(Self) -> Bool
+  done(Self) -> Bool
+  handle(Self) -> Int
+}
+

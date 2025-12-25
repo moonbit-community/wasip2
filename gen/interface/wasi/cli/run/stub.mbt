@@ -3,5 +3,5 @@
 ///|
 /// Run the program.
 pub fn run() -> Result[Unit, Unit] {
-  ...
+  @demo.async_run(fn() { () })
 }

@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/demo/internal/wasi/cli/stdin"
+
+import(
+  "peter-jerry-ye/demo/internal/wasi/io/streams"
+)
+
+// Values
+pub fn get_stdin() -> @streams.InputStream
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

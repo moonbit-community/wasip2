@@ -1,6 +1,0 @@
-{
-  "warn-list": "-44",
-  "import": [
-    { "path" : "peter-jerry-ye/demo/interface/wasi/cli/terminalInput", "alias" : "terminalInput" }
-  ]
-}
