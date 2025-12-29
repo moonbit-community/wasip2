@@ -1,0 +1,10 @@
+{
+  "import": [
+    "peter-jerry-ye/demo",
+    "peter-jerry-ye/demo/io",
+    "peter-jerry-ye/demo/semaphore",
+    { "path": "peter-jerry-ye/demo/internal/wasi/filesystem/types", "alias": "types" },
+    { "path": "peter-jerry-ye/demo/internal/wasi/filesystem/preopens", "alias": "preopens" },
+    { "path": "peter-jerry-ye/demo/internal/wasi/clocks/wallClock", "alias": "wallClock" }
+  ]
+}

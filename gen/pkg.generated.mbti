@@ -2,7 +2,11 @@
 package "peter-jerry-ye/demo/gen"
 
 // Values
+pub async fn async_run() -> Unit
+
 pub fn mbt_ffi_cabi_realloc(Int, Int, Int, Int) -> Int
+
+pub fn run() -> Result[Unit, Unit]
 
 // Errors
 

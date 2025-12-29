@@ -1,0 +1,162 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/demo/fs"
+
+import(
+  "peter-jerry-ye/demo/internal/wasi/filesystem/types"
+  "peter-jerry-ye/demo/io"
+)
+
+// Values
+pub fn atime(StringView, follow_symlink? : Bool) -> (Int64, Int) raise FsError
+
+pub fn can_execute(StringView) -> Bool
+
+pub fn can_read(StringView) -> Bool
+
+pub fn can_write(StringView) -> Bool
+
+pub fn chmod(StringView, Int) -> Unit raise FsError
+
+pub fn create(StringView, permission~ : Int, sync? : SyncMode) -> File raise FsError
+
+pub fn ctime(StringView, follow_symlink? : Bool) -> (Int64, Int) raise FsError
+
+pub fn exists(StringView) -> Bool
+
+pub fn kind(StringView, follow_symlink? : Bool) -> FileKind raise FsError
+
+pub fn mkdir(StringView, permission~ : Int) -> Unit raise FsError
+
+pub fn mtime(StringView, follow_symlink? : Bool) -> (Int64, Int) raise FsError
+
+pub fn open(StringView, mode~ : Mode, sync? : SyncMode, append? : Bool, create? : Int, truncate? : Bool) -> File raise FsError
+
+pub fn opendir(StringView) -> Directory raise FsError
+
+pub fn preopens() -> Array[Preopen]
+
+pub fn read_dir_entries(StringView, include_hidden? : Bool, include_special? : Bool) -> Array[DirEntry] raise FsError
+
+pub async fn read_file(StringView, sync_timestamp? : Bool) -> &@io.Data
+
+#deprecated
+pub async fn read_text_file(StringView, encoding? : @io.Encoding) -> String
+
+pub fn readdir(StringView, include_hidden? : Bool, include_special? : Bool, sort? : Bool) -> Array[String] raise FsError
+
+pub fn realpath(StringView) -> String raise FsError
+
+pub fn remove(StringView) -> Unit raise FsError
+
+pub fn rmdir(StringView, recursive? : Bool) -> Unit raise FsError
+
+pub fn stat(StringView, follow_symlink? : Bool) -> Stat? raise FsError
+
+pub fn symlink(target~ : StringView, StringView) -> Unit raise FsError
+
+pub async fn walk(StringView, async (String, Array[String]) -> Unit, max_concurrency? : Int, allow_failure? : Bool) -> Unit
+
+pub async fn write_file(StringView, &@io.Data, sync? : SyncMode, append? : Bool, create? : Int, truncate? : Bool) -> Unit
+
+#deprecated
+pub async fn write_text_file(StringView, String, encoding? : @io.Encoding, sync? : SyncMode, append? : Bool, create? : Int, truncate? : Bool) -> Unit
+
+// Errors
+pub(all) suberror FsError {
+  NoPreopen
+  PathOutsidePreopens
+  InvalidPath
+  InvalidPosition
+  NotDirectory
+  NotFile
+  Unsupported
+  UnexpectedEof
+  Wasi(@types.ErrorCode)
+}
+pub impl Eq for FsError
+pub impl Show for FsError
+
+// Types and methods
+pub(all) struct DirEntry {
+  name : String
+  kind : FileKind
+}
+pub impl Eq for DirEntry
+pub impl Show for DirEntry
+
+type Directory
+pub fn Directory::close(Self) -> Unit
+pub fn Directory::read_all(Self, include_hidden? : Bool, include_special? : Bool) -> Array[String] raise FsError
+pub fn Directory::read_entries(Self, include_hidden? : Bool, include_special? : Bool) -> Array[DirEntry] raise FsError
+
+type File
+pub fn File::as_dir(Self) -> Directory raise FsError
+pub fn File::atime(Self) -> (Int64, Int)
+pub fn File::close(Self) -> Unit
+pub fn File::ctime(Self) -> (Int64, Int)
+pub fn File::kind(Self) -> FileKind
+pub fn File::mtime(Self) -> (Int64, Int)
+pub fn File::read_at(Self, FixedArray[Byte], position~ : Int64, offset? : Int, len? : Int) -> Int raise FsError
+pub fn File::read_exactly_at(Self, Int, position~ : Int64) -> Bytes raise FsError
+pub fn File::size(Self) -> Int64
+pub fn File::sync(Self, only_data? : Bool) -> Unit
+pub fn File::write_at(Self, BytesView, position~ : Int64) -> Unit raise FsError
+pub impl @io.Reader for File
+pub impl @io.Writer for File
+
+pub(all) enum FileKind {
+  Unknown
+  Regular
+  Directory
+  SymLink
+  Socket
+  Pipe
+  BlockDevice
+  CharDevice
+}
+pub impl Eq for FileKind
+pub impl Show for FileKind
+
+pub(all) enum Mode {
+  ReadOnly
+  WriteOnly
+  ReadWrite
+}
+pub impl Eq for Mode
+pub impl Show for Mode
+
+pub(all) struct Preopen {
+  dir : Directory
+  path : String
+}
+
+pub(all) struct Stat {
+  kind : FileKind
+  size : Int64
+  link_count : UInt64
+  atime : Timestamp?
+  mtime : Timestamp?
+  ctime : Timestamp?
+}
+pub impl Eq for Stat
+pub impl Show for Stat
+
+pub(all) enum SyncMode {
+  NoSync
+  Data
+  Full
+}
+pub impl Eq for SyncMode
+pub impl Show for SyncMode
+
+pub(all) struct Timestamp {
+  seconds : Int64
+  nanoseconds : Int
+}
+pub impl Eq for Timestamp
+pub impl Show for Timestamp
+
+// Type aliases
+
+// Traits
+
