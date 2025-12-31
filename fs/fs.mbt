@@ -93,6 +93,7 @@ pub(all) struct Preopen {
   path : String
 }
 
+///|
 fn normalize_path(path : StringView) -> String {
   let raw = path.to_string()
   if raw == "" {
@@ -115,12 +116,17 @@ fn normalize_path(path : StringView) -> String {
   }
   let joined = parts.join("/")
   if is_abs {
-    if joined == "" { "/" } else { "/" + joined }
+    if joined == "" {
+      "/"
+    } else {
+      "/" + joined
+    }
   } else {
     joined
   }
 }
 
+///|
 fn path_flags(follow_symlink : Bool) -> @types.PathFlags {
   let mut flags = @types.PathFlags::default()
   if follow_symlink {
@@ -129,15 +135,12 @@ fn path_flags(follow_symlink : Bool) -> @types.PathFlags {
   flags
 }
 
+///|
 fn descriptor_flags(mode : Mode) -> @types.DescriptorFlags {
   let mut flags = @types.DescriptorFlags::default()
   match mode {
-    ReadOnly => {
-      flags = flags.set(@types.DescriptorFlagsFlag::READ)
-    }
-    WriteOnly => {
-      flags = flags.set(@types.DescriptorFlagsFlag::WRITE)
-    }
+    ReadOnly => flags = flags.set(@types.DescriptorFlagsFlag::READ)
+    WriteOnly => flags = flags.set(@types.DescriptorFlagsFlag::WRITE)
     ReadWrite => {
       flags = flags.set(@types.DescriptorFlagsFlag::READ)
       flags = flags.set(@types.DescriptorFlagsFlag::WRITE)
@@ -146,7 +149,12 @@ fn descriptor_flags(mode : Mode) -> @types.DescriptorFlags {
   flags
 }
 
-fn make_open_flags(create : Int?, truncate : Bool?, directory : Bool) -> @types.OpenFlags {
+///|
+fn make_open_flags(
+  create : Int?,
+  truncate : Bool?,
+  directory : Bool,
+) -> @types.OpenFlags {
   let mut flags = @types.OpenFlags::default()
   if create is Some(_) {
     flags = flags.set(@types.OpenFlagsFlag::CREATE)
@@ -160,6 +168,7 @@ fn make_open_flags(create : Int?, truncate : Bool?, directory : Bool) -> @types.
   flags
 }
 
+///|
 fn to_file_kind(kind : @types.DescriptorType) -> FileKind {
   match kind {
     UNKNOWN => Unknown
@@ -173,6 +182,7 @@ fn to_file_kind(kind : @types.DescriptorType) -> FileKind {
   }
 }
 
+///|
 fn to_timestamp(value : @wallClock.Datetime) -> Timestamp {
   {
     seconds: value.seconds.reinterpret_as_int64(),
@@ -180,6 +190,7 @@ fn to_timestamp(value : @wallClock.Datetime) -> Timestamp {
   }
 }
 
+///|
 fn to_stat(stat : @types.DescriptorStat) -> Stat {
   {
     kind: to_file_kind(stat.type_),
@@ -191,6 +202,7 @@ fn to_stat(stat : @types.DescriptorStat) -> Stat {
   }
 }
 
+///|
 fn timestamp_pair(value : @wallClock.Datetime?) -> (Int64, Int) {
   match value {
     None => (0L, 0)
@@ -201,6 +213,7 @@ fn timestamp_pair(value : @wallClock.Datetime?) -> (Int64, Int) {
   }
 }
 
+///|
 fn timestamp_pair_from_stat(value : Timestamp?) -> (Int64, Int) {
   match value {
     None => (0L, 0)
@@ -208,6 +221,7 @@ fn timestamp_pair_from_stat(value : Timestamp?) -> (Int64, Int) {
   }
 }
 
+///|
 fn[T] unwrap_fs(result : Result[T, @types.ErrorCode]) -> T raise FsError {
   match result {
     Ok(value) => value
@@ -215,12 +229,12 @@ fn[T] unwrap_fs(result : Result[T, @types.ErrorCode]) -> T raise FsError {
   }
 }
 
+///|
 fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError {
   let normalized = normalize_path(path)
   guard normalized != "" else { raise FsError::InvalidPath }
   let dirs = @preopens.get_directories()
   guard dirs.length() > 0 else { raise FsError::NoPreopen }
-
   let roots : Array[(@types.Descriptor, String)] = []
   let mut has_root = false
   for i = 0; i < dirs.length(); i = i + 1 {
@@ -231,7 +245,6 @@ fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError 
     }
     roots.push((desc, root))
   }
-
   if normalized.has_prefix("/") {
     guard has_root else { raise FsError::PathOutsidePreopens }
     let mut best_desc : @types.Descriptor? = None
@@ -249,14 +262,17 @@ fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError 
       None => raise FsError::PathOutsidePreopens
       Some(desc) => {
         let view = normalized[:]
-        let rel =
-          if best_root == "/" {
-            if normalized == "/" { "" } else { view.view(start_offset=1).to_string() }
-          } else if normalized == best_root {
+        let rel = if best_root == "/" {
+          if normalized == "/" {
             ""
           } else {
-            view.view(start_offset=best_root.length() + 1).to_string()
+            view.view(start_offset=1).to_string()
           }
+        } else if normalized == best_root {
+          ""
+        } else {
+          view.view(start_offset=best_root.length() + 1).to_string()
+        }
         (desc, rel)
       }
     }
@@ -277,7 +293,9 @@ fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError 
           if normalized == root_rel {
             best_rel = ""
           } else {
-            best_rel = normalized[:].view(start_offset=root_rel.length() + 1).to_string()
+            best_rel = normalized[:]
+              .view(start_offset=root_rel.length() + 1)
+              .to_string()
           }
         }
       }
@@ -295,26 +313,29 @@ fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError 
   }
 }
 
+///|
 fn split_parent(path : StringView) -> (String, String) raise FsError {
   let normalized = normalize_path(path)
-  guard normalized != "" && normalized != "/" else { raise FsError::InvalidPath }
+  guard normalized != "" && normalized != "/" else {
+    raise FsError::InvalidPath
+  }
   match normalized.rev_find("/") {
     None => ("", normalized)
     Some(0) => ("/", normalized[:].view(start_offset=1).to_string())
-    Some(i) => (
-      normalized[:].view(end_offset=i).to_string(),
-      normalized[:].view(start_offset=i + 1).to_string(),
-    )
+    Some(i) =>
+      (
+        normalized[:].view(end_offset=i).to_string(),
+        normalized[:].view(start_offset=i + 1).to_string(),
+      )
   }
 }
 
-fn make_file(
-  desc : @types.Descriptor,
-  append : Bool,
-) -> File {
+///|
+fn make_file(desc : @types.Descriptor, append : Bool) -> File {
   { desc, read_buf: @io.ReaderBuffer::new(), read_pos: 0, write_pos: 0, append }
 }
 
+///|
 fn ensure_file(desc : @types.Descriptor) -> Unit raise FsError {
   match unwrap_fs(desc.get_type()) {
     DIRECTORY => raise FsError::NotFile
@@ -322,6 +343,7 @@ fn ensure_file(desc : @types.Descriptor) -> Unit raise FsError {
   }
 }
 
+///|
 fn ensure_dir(desc : @types.Descriptor) -> Unit raise FsError {
   match unwrap_fs(desc.get_type()) {
     DIRECTORY => ()
@@ -353,12 +375,11 @@ pub fn open(
   let (desc, rel) = resolve_path(path)
   let flags = descriptor_flags(mode)
   let open_flags = make_open_flags(create, truncate, false)
-  let file_desc =
-    if rel == "" {
-      desc
-    } else {
-      unwrap_fs(desc.open_at(@types.PathFlags::default(), rel, open_flags, flags))
-    }
+  let file_desc = if rel == "" {
+    desc
+  } else {
+    unwrap_fs(desc.open_at(@types.PathFlags::default(), rel, open_flags, flags))
+  }
   ensure_file(file_desc)
   let file = make_file(file_desc, append)
   if append {
@@ -380,26 +401,25 @@ pub fn create(
   sync? : SyncMode = NoSync,
 ) -> File raise FsError {
   ignore(permission)
-  open(path, mode=ReadWrite, sync=sync, create=0, truncate=true)
+  open(path, mode=ReadWrite, sync~, create=0, truncate=true)
 }
 
 ///|
 pub fn opendir(path : StringView) -> Directory raise FsError {
   let (desc, rel) = resolve_path(path)
   let open_flags = make_open_flags(None, None, true)
-  let dir_desc =
-    if rel == "" {
-      desc
-    } else {
-      unwrap_fs(
-        desc.open_at(
-          @types.PathFlags::default(),
-          rel,
-          open_flags,
-          descriptor_flags(ReadOnly),
-        ),
-      )
-    }
+  let dir_desc = if rel == "" {
+    desc
+  } else {
+    unwrap_fs(
+      desc.open_at(
+        @types.PathFlags::default(),
+        rel,
+        open_flags,
+        descriptor_flags(ReadOnly),
+      ),
+    )
+  }
   ensure_dir(dir_desc)
   { desc: dir_desc }
 }
@@ -420,12 +440,7 @@ pub fn stat(
 ) -> Stat? raise FsError {
   let (desc, rel) = resolve_path(path)
   let flags = path_flags(follow_symlink)
-  let result =
-    if rel == "" {
-      desc.stat()
-    } else {
-      desc.stat_at(flags, rel)
-    }
+  let result = if rel == "" { desc.stat() } else { desc.stat_at(flags, rel) }
   match result {
     Ok(value) => Some(to_stat(value))
     Err(@types.ErrorCode::NO_ENTRY) => None
@@ -439,7 +454,7 @@ pub fn kind(
   path : StringView,
   follow_symlink? : Bool = true,
 ) -> FileKind raise FsError {
-  match stat(path, follow_symlink=follow_symlink) {
+  match stat(path, follow_symlink~) {
     None => raise FsError::InvalidPath
     Some(info) => info.kind
   }
@@ -450,7 +465,7 @@ pub fn atime(
   path : StringView,
   follow_symlink? : Bool = true,
 ) -> (Int64, Int) raise FsError {
-  match stat(path, follow_symlink=follow_symlink) {
+  match stat(path, follow_symlink~) {
     None => raise FsError::InvalidPath
     Some(info) => timestamp_pair_from_stat(info.atime)
   }
@@ -461,7 +476,7 @@ pub fn mtime(
   path : StringView,
   follow_symlink? : Bool = true,
 ) -> (Int64, Int) raise FsError {
-  match stat(path, follow_symlink=follow_symlink) {
+  match stat(path, follow_symlink~) {
     None => raise FsError::InvalidPath
     Some(info) => timestamp_pair_from_stat(info.mtime)
   }
@@ -472,7 +487,7 @@ pub fn ctime(
   path : StringView,
   follow_symlink? : Bool = true,
 ) -> (Int64, Int) raise FsError {
-  match stat(path, follow_symlink=follow_symlink) {
+  match stat(path, follow_symlink~) {
     None => raise FsError::InvalidPath
     Some(info) => timestamp_pair_from_stat(info.ctime)
   }
@@ -531,7 +546,11 @@ pub fn rmdir(
   let (desc, rel) = resolve_path(path)
   guard rel != "" else { raise FsError::InvalidPath }
   if recursive {
-    let entries = read_dir_entries(path, include_hidden=true, include_special=false)
+    let entries = read_dir_entries(
+      path,
+      include_hidden=true,
+      include_special=false,
+    )
     for entry in entries {
       let child = join_path(path.to_string(), entry.name)
       if entry.kind is Directory {
@@ -545,10 +564,7 @@ pub fn rmdir(
 }
 
 ///|
-pub fn symlink(
-  target~ : StringView,
-  path : StringView,
-) -> Unit raise FsError {
+pub fn symlink(target~ : StringView, path : StringView) -> Unit raise FsError {
   let (parent, name) = split_parent(path)
   let (desc, rel) = resolve_path(parent)
   let prefix = if rel == "" { name } else { rel + "/" + name }
@@ -559,7 +575,7 @@ pub fn symlink(
 pub async fn read_file(
   path : StringView,
   sync_timestamp? : Bool = false,
-) -> &@io.Data raise {
+) -> &@io.Data {
   let file = open(path, mode=ReadOnly)
   defer file.close()
   let data = file.read_all()
@@ -573,8 +589,8 @@ pub async fn read_file(
 #deprecated
 pub async fn read_text_file(
   path : StringView,
-  encoding~ : @io.Encoding = UTF8,
-) -> String raise {
+  encoding? : @io.Encoding = UTF8,
+) -> String {
   guard encoding is UTF8
   read_file(path).text()
 }
@@ -587,15 +603,8 @@ pub async fn write_file(
   append? : Bool = false,
   create? : Int,
   truncate? : Bool,
-) -> Unit raise {
-  let file = open(
-    path,
-    mode=WriteOnly,
-    sync=sync,
-    append=append,
-    create?=create,
-    truncate?=truncate,
-  )
+) -> Unit {
+  let file = open(path, mode=WriteOnly, sync~, append~, create?, truncate?)
   defer file.close()
   file.write(data)
   if sync is Data {
@@ -610,21 +619,14 @@ pub async fn write_file(
 pub async fn write_text_file(
   path : StringView,
   data : String,
-  encoding~ : @io.Encoding = UTF8,
+  encoding? : @io.Encoding = UTF8,
   sync? : SyncMode = NoSync,
   append? : Bool = false,
   create? : Int,
   truncate? : Bool,
-) -> Unit raise {
+) -> Unit {
   guard encoding is UTF8
-  write_file(
-    path,
-    data,
-    sync=sync,
-    append=append,
-    create?=create,
-    truncate?=truncate,
-  )
+  write_file(path, data, sync~, append~, create?, truncate?)
 }
 
 ///|
@@ -634,7 +636,7 @@ pub fn readdir(
   include_special? : Bool = false,
   sort? : Bool = false,
 ) -> Array[String] raise FsError {
-  let entries = read_dir_entries(path, include_hidden=include_hidden, include_special=include_special)
+  let entries = read_dir_entries(path, include_hidden~, include_special~)
   let names = entries.map(e => e.name)
   if sort {
     names.sort()
@@ -650,7 +652,7 @@ pub fn read_dir_entries(
 ) -> Array[DirEntry] raise FsError {
   let dir = opendir(path)
   defer dir.close()
-  dir.read_entries(include_hidden=include_hidden, include_special=include_special)
+  dir.read_entries(include_hidden~, include_special~)
 }
 
 ///|
@@ -679,24 +681,29 @@ pub async fn walk(
   f : async (String, Array[String]) -> Unit,
   max_concurrency? : Int = 8,
   allow_failure? : Bool = false,
-) -> Unit raise {
+) -> Unit {
   let limit = if max_concurrency <= 0 { 1 } else { max_concurrency }
   let sem = @semaphore.Semaphore::new(limit)
-  @demo.with_task_group(fn(tg) {
+  @async.with_task_group(fn(tg) {
     async fn visit(dir_path : String) -> Unit {
       sem.acquire()
       defer sem.release()
-      let entries = read_dir_entries(dir_path[:], include_hidden=true, include_special=false)
+      let entries = read_dir_entries(
+        dir_path[:],
+        include_hidden=true,
+        include_special=false,
+      )
       let names = entries.map(e => e.name)
       f(dir_path, names)
       for entry in entries {
         if entry.kind is Directory {
           let child = join_path(dir_path, entry.name)
-          tg.spawn_bg(() => visit(child), allow_failure=allow_failure)
+          tg.spawn_bg(() => visit(child), allow_failure~)
         }
       }
     }
-    tg.spawn_bg(() => visit(path.to_string()), allow_failure=allow_failure)
+
+    tg.spawn_bg(() => visit(path.to_string()), allow_failure~)
     ()
   })
 }
@@ -742,8 +749,7 @@ pub fn Directory::read_all(
   include_hidden? : Bool = false,
   include_special? : Bool = false,
 ) -> Array[String] raise FsError {
-  self.read_entries(include_hidden=include_hidden, include_special=include_special)
-    .map(e => e.name)
+  self.read_entries(include_hidden~, include_special~).map(e => e.name)
 }
 
 ///|
@@ -815,11 +821,14 @@ pub fn File::read_at(
   len? : Int,
 ) -> Int raise FsError {
   guard position >= 0 else { raise FsError::InvalidPosition }
-  guard offset >= 0 && offset <= buf.length() else { raise FsError::InvalidPosition }
+  guard offset >= 0 && offset <= buf.length() else {
+    raise FsError::InvalidPosition
+  }
   let len = if len is Some(l) { l } else { buf.length() - offset }
   guard len >= 0 else { raise FsError::InvalidPosition }
-  let (data, _) =
-    unwrap_fs(self.desc.read(len.to_uint64(), position.reinterpret_as_uint64()))
+  let (data, _) = unwrap_fs(
+    self.desc.read(len.to_uint64(), position.reinterpret_as_uint64()),
+  )
   let copied = @cmp.minimum(len, data.length())
   data.blit_to(buf, len=copied, dst_offset=offset)
   copied
@@ -833,7 +842,7 @@ pub fn File::read_exactly_at(
 ) -> Bytes raise FsError {
   guard len >= 0 else { raise FsError::InvalidPosition }
   let buf = FixedArray::make(len, b'\x00')
-  let n = self.read_at(buf, position~, offset=0, len=len)
+  let n = self.read_at(buf, position~, offset=0, len~)
   if n < len {
     raise FsError::UnexpectedEof
   }
@@ -872,7 +881,7 @@ pub impl @io.Reader for File with _direct_read(self, buf, offset~, max_len~) {
   let n = self.read_at(
     buf,
     position=self.read_pos.reinterpret_as_int64(),
-    offset=offset,
+    offset~,
     len=max_len,
   ) catch {
     _ => 0
@@ -891,22 +900,24 @@ pub impl @io.Writer for File with write_once(self, buf, offset~, len~) {
     return 0
   }
   let view = buf[offset:offset + len]
-  let position =
-    if self.append {
-      match self.desc.stat() {
-        Ok(stat) => stat.size.reinterpret_as_int64()
-        Err(_) => self.write_pos.reinterpret_as_int64()
-      }
-    } else {
-      self.write_pos.reinterpret_as_int64()
+  let position = if self.append {
+    match self.desc.stat() {
+      Ok(stat) => stat.size.reinterpret_as_int64()
+      Err(_) => self.write_pos.reinterpret_as_int64()
     }
-  self.write_at(view, position~) catch { _ => return 0 }
+  } else {
+    self.write_pos.reinterpret_as_int64()
+  }
+  self.write_at(view, position~) catch {
+    _ => return 0
+  }
   if not(self.append) {
     self.write_pos += len.to_uint64()
   }
   len
 }
 
+///|
 fn join_path(base : String, name : String) -> String {
   if base == "" {
     name

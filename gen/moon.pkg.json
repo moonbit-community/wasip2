@@ -11,7 +11,8 @@
     }
   },
   "import": [
-    "peter-jerry-ye/demo",
-    "peter-jerry-ye/demo/stdio"
+    "peter-jerry-ye/wasip2",
+    "peter-jerry-ye/wasip2/stdio",
+    "peter-jerry-ye/wasip2/async"
   ]
 }

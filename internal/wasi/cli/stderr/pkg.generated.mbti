@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/cli/stderr"
+package "peter-jerry-ye/wasip2/internal/wasi/cli/stderr"
 
 import(
-  "peter-jerry-ye/demo/internal/wasi/io/streams"
+  "peter-jerry-ye/wasip2/internal/wasi/io/streams"
 )
 
 // Values

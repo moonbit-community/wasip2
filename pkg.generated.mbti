@@ -1,29 +1,12 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo"
+package "peter-jerry-ye/wasip2"
 
 // Values
-pub fn async_run(async () -> Unit) -> Result[Unit, Unit]
-
 pub async fn sleep(Int) -> Unit
 
-pub async fn[X] with_task_group(async (TaskGroup[X]) -> X) -> X
-
 // Errors
-#deprecated
-pub suberror AlreadyTerminated
-pub impl Show for AlreadyTerminated
 
 // Types and methods
-type TaskGroup[X]
-pub fn[X] TaskGroup::add_defer(Self[X], async () -> Unit) -> Unit
-pub fn[X] TaskGroup::return_immediately(Self[X], X) -> Unit raise
-pub fn[G, X] TaskGroup::spawn(Self[G], async () -> X, no_wait? : Bool, allow_failure? : Bool) -> Task_[X]
-pub fn[X] TaskGroup::spawn_bg(Self[X], async () -> Unit, no_wait? : Bool, allow_failure? : Bool) -> Unit
-
-type Task_[X]
-pub fn[X] Task_::cancel(Self[X]) -> Unit
-pub fn[X] Task_::try_wait(Self[X]) -> X? raise
-pub async fn[X] Task_::wait(Self[X]) -> X
 
 // Type aliases
 

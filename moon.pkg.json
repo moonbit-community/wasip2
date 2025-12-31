@@ -1,10 +1,6 @@
 {
-  "warn-list": "-44",
-  "supported-targets": [
-    "wasm"
-  ],
   "import": [
-    "peter-jerry-ye/demo/internal/ev",
-    "peter-jerry-ye/demo/internal/wasi/clocks/monotonicClock"
+    "peter-jerry-ye/wasip2/internal/ev",
+    "peter-jerry-ye/wasip2/internal/wasi/clocks/monotonicClock"
   ]
 }

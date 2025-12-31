@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/sockets/udp"
+package "peter-jerry-ye/wasip2/internal/wasi/sockets/udp"
 
 import(
-  "peter-jerry-ye/demo/internal/wasi/io/poll"
-  "peter-jerry-ye/demo/internal/wasi/sockets/network"
+  "peter-jerry-ye/wasip2/internal/wasi/io/poll"
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/network"
 )
 
 // Values

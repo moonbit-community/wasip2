@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/cli/environment"
+package "peter-jerry-ye/wasip2/internal/wasi/cli/environment"
 
 // Values
 pub fn get_arguments() -> Array[String]

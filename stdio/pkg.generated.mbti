@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/stdio"
+package "peter-jerry-ye/wasip2/stdio"
 
 import(
-  "peter-jerry-ye/demo/io"
+  "peter-jerry-ye/wasip2/async/io"
 )
 
 // Values

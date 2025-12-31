@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/cli/exit"
+package "peter-jerry-ye/wasip2/internal/wasi/cli/exit"
 
 // Values
 pub fn exit(Result[Unit, Unit]) -> Unit

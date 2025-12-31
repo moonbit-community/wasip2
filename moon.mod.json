@@ -1,1 +1,4 @@
-{ "name": "peter-jerry-ye/demo", "preferred-target": "wasm" }
+{
+  "name": "peter-jerry-ye/wasip2",
+  "preferred-target": "wasm"
+}

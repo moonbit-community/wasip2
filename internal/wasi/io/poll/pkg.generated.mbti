@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/io/poll"
+package "peter-jerry-ye/wasip2/internal/wasi/io/poll"
 
 // Values
 pub fn poll(Array[Pollable]) -> FixedArray[UInt]

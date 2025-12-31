@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/fs"
+package "peter-jerry-ye/wasip2/fs"
 
 import(
-  "peter-jerry-ye/demo/internal/wasi/filesystem/types"
-  "peter-jerry-ye/demo/io"
+  "peter-jerry-ye/wasip2/async/io"
+  "peter-jerry-ye/wasip2/internal/wasi/filesystem/types"
 )
 
 // Values

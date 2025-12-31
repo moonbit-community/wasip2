@@ -1,10 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/filesystem/types"
+package "peter-jerry-ye/wasip2/internal/wasi/filesystem/types"
 
 import(
-  "peter-jerry-ye/demo/internal/wasi/clocks/wallClock"
-  "peter-jerry-ye/demo/internal/wasi/io/error"
-  "peter-jerry-ye/demo/internal/wasi/io/streams"
+  "peter-jerry-ye/wasip2/internal/wasi/clocks/wallClock"
+  "peter-jerry-ye/wasip2/internal/wasi/io/error"
+  "peter-jerry-ye/wasip2/internal/wasi/io/streams"
 )
 
 // Values

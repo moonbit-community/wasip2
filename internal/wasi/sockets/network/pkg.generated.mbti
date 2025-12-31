@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/sockets/network"
+package "peter-jerry-ye/wasip2/internal/wasi/sockets/network"
 
 import(
-  "peter-jerry-ye/demo/internal/wasi/io/error"
+  "peter-jerry-ye/wasip2/internal/wasi/io/error"
 )
 
 // Values

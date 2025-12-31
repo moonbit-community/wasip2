@@ -3,7 +3,7 @@
 ///|
 /// Run the program.
 pub fn run() -> Result[Unit, Unit] {
-  @demo.async_run(async_run)
+  @async.async_run(async_run)
 }
 
 ///|
@@ -12,7 +12,7 @@ pub async fn async_run() -> Unit {
   @stdio.stdout.write("This is a test of WASI stdio.\n")
   for i in 0..<5 {
     @stdio.stdout.write("Tick " + (5 - i).to_string() + "\n")
-    @demo.sleep(1000)
+    @wasip2.sleep(1000)
   }
   @stdio.stdout.write("Boom!\n")
 }

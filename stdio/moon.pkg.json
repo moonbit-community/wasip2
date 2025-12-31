@@ -1,10 +1,10 @@
 {
   "import": [
-    "peter-jerry-ye/demo/internal/ev",
-    "peter-jerry-ye/demo/io",
-    "peter-jerry-ye/demo/internal/wasi/io/streams",
-    "peter-jerry-ye/demo/internal/wasi/cli/stdin",
-    "peter-jerry-ye/demo/internal/wasi/cli/stdout",
-    "peter-jerry-ye/demo/internal/wasi/cli/stderr"
+    "peter-jerry-ye/wasip2/internal/ev",
+    "peter-jerry-ye/wasip2/async/io",
+    "peter-jerry-ye/wasip2/internal/wasi/io/streams",
+    "peter-jerry-ye/wasip2/internal/wasi/cli/stdin",
+    "peter-jerry-ye/wasip2/internal/wasi/cli/stdout",
+    "peter-jerry-ye/wasip2/internal/wasi/cli/stderr"
   ]
 }

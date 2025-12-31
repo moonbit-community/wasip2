@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/random/random"
+package "peter-jerry-ye/wasip2/internal/wasi/random/random"
 
 // Values
 pub fn get_random_bytes(UInt64) -> FixedArray[Byte]

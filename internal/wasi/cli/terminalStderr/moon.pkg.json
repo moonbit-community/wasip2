@@ -1,6 +1,6 @@
 {
   "warn-list": "-44",
   "import": [
-    { "path" : "peter-jerry-ye/demo/internal/wasi/cli/terminalOutput", "alias" : "terminalOutput" }
+    { "path" : "peter-jerry-ye/wasip2/internal/wasi/cli/terminalOutput", "alias" : "terminalOutput" }
   ]
 }

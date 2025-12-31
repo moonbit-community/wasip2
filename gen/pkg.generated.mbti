@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/gen"
+package "peter-jerry-ye/wasip2/gen"
 
 // Values
 pub async fn async_run() -> Unit

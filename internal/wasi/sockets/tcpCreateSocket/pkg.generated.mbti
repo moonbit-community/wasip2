@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/sockets/tcpCreateSocket"
+package "peter-jerry-ye/wasip2/internal/wasi/sockets/tcpCreateSocket"
 
 import(
-  "peter-jerry-ye/demo/internal/wasi/sockets/network"
-  "peter-jerry-ye/demo/internal/wasi/sockets/tcp"
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/network"
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/tcp"
 )
 
 // Values

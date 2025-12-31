@@ -1,8 +1,8 @@
 {
   "warn-list": "-44",
   "import": [
-    { "path" : "peter-jerry-ye/demo/internal/wasi/io/poll", "alias" : "poll" },
-    { "path" : "peter-jerry-ye/demo/internal/wasi/io/streams", "alias" : "streams" },
-    { "path" : "peter-jerry-ye/demo/internal/wasi/sockets/network", "alias" : "network" }
+    { "path" : "peter-jerry-ye/wasip2/internal/wasi/io/poll", "alias" : "poll" },
+    { "path" : "peter-jerry-ye/wasip2/internal/wasi/io/streams", "alias" : "streams" },
+    { "path" : "peter-jerry-ye/wasip2/internal/wasi/sockets/network", "alias" : "network" }
   ]
 }

@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/cli/terminalStderr"
+package "peter-jerry-ye/wasip2/internal/wasi/cli/terminalStderr"
 
 import(
-  "peter-jerry-ye/demo/internal/wasi/cli/terminalOutput"
+  "peter-jerry-ye/wasip2/internal/wasi/cli/terminalOutput"
 )
 
 // Values

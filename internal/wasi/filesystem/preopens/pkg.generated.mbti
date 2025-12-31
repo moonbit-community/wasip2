@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/filesystem/preopens"
+package "peter-jerry-ye/wasip2/internal/wasi/filesystem/preopens"
 
 import(
-  "peter-jerry-ye/demo/internal/wasi/filesystem/types"
+  "peter-jerry-ye/wasip2/internal/wasi/filesystem/types"
 )
 
 // Values

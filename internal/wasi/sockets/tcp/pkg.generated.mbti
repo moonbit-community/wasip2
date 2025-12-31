@@ -1,10 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "peter-jerry-ye/demo/internal/wasi/sockets/tcp"
+package "peter-jerry-ye/wasip2/internal/wasi/sockets/tcp"
 
 import(
-  "peter-jerry-ye/demo/internal/wasi/io/poll"
-  "peter-jerry-ye/demo/internal/wasi/io/streams"
-  "peter-jerry-ye/demo/internal/wasi/sockets/network"
+  "peter-jerry-ye/wasip2/internal/wasi/io/poll"
+  "peter-jerry-ye/wasip2/internal/wasi/io/streams"
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/network"
 )
 
 // Values
