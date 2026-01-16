@@ -8,9 +8,21 @@ pub fn run() -> Result[Unit, Unit] {
 
 ///|
 pub async fn async_run() -> Unit {
+  // CondVar tests
   test_cond_var_cancellation_no_swallow()
   test_cond_var_fairness()
   test_cond_var_broadcast()
+  // Queue tests
+  test_aqueue_basic()
+  test_aqueue_multi_reader()
+  test_aqueue_cancellation_no_swallow()
+  test_aqueue_fairness()
+  test_try_get()
+  // with_timeout tests
+  test_with_timeout_normal_exit()
+  test_with_timeout_timeout()
+  test_with_timeout_opt_normal_exit()
+  test_with_timeout_opt_timeout()
   @stdio.stdout.write("All tests passed!\n")
 }
 
@@ -114,6 +126,349 @@ async fn test_cond_var_broadcast() -> Unit {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
     @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_aqueue_basic() -> Unit {
+  @stdio.stdout.write("test aqueue basic ... ")
+  let log = StringBuilder::new()
+  @async.with_task_group(fn(root) {
+    let queue = @aqueue.Queue::new(kind=Unbounded)
+    root.spawn_bg(fn() {
+      for _ in 0..<6 {
+        log.write_string("get => \{queue.get()}\n")
+      }
+    })
+    root.spawn_bg(fn() {
+      for x in 0..<6 {
+        @wasip2.sleep(70)
+        queue.put(x)
+        log.write_string("put(\{x})\n")
+      }
+    })
+  })
+  let expected = (
+    #|put(0)
+    #|get => 0
+    #|put(1)
+    #|get => 1
+    #|put(2)
+    #|get => 2
+    #|put(3)
+    #|get => 3
+    #|put(4)
+    #|get => 4
+    #|put(5)
+    #|get => 5
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_aqueue_multi_reader() -> Unit {
+  @stdio.stdout.write("test aqueue multi-reader ... ")
+  let log = StringBuilder::new()
+  @async.with_task_group(fn(root) {
+    let queue = @aqueue.Queue::new(kind=Unbounded)
+    root.spawn_bg(fn() {
+      @wasip2.sleep(70)
+      let x = queue.get()
+      log.write_string("task 1: get => \{x}\n")
+    })
+    root.spawn_bg(fn() {
+      let x = queue.get()
+      log.write_string("task 2: get => \{x}\n")
+    })
+    @wasip2.sleep(170)
+    queue.put(1)
+    queue.put(2)
+  })
+  let expected = (
+    #|task 2: get => 1
+    #|task 1: get => 2
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_aqueue_cancellation_no_swallow() -> Unit {
+  @stdio.stdout.write("test aqueue cancellation no_swallow ... ")
+  let log = StringBuilder::new()
+  let try_get_result : Ref[String] = { val: "" }
+  @async.with_task_group(fn(group) {
+    let q = @aqueue.Queue::new(kind=Unbounded)
+    let get_task = group.spawn(allow_failure=true, fn() {
+      log.write_string("get() => \{q.get()}\n")
+    })
+    @wasip2.sleep(100)
+    q.put(42)
+    get_task.cancel()
+    @wasip2.sleep(100)
+    try_get_result.val = q.try_get().to_string()
+  })
+  let expected_log = (
+    #|get() => 42
+    #|
+  )
+  if log.to_string() != expected_log {
+    @stdio.stdout.write("FAILED (log)\n")
+    @stdio.stdout.write("expected: " + expected_log + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  if try_get_result.val != "None" {
+    @stdio.stdout.write("FAILED (try_get)\n")
+    @stdio.stdout.write("expected: None\n")
+    @stdio.stdout.write("got: " + try_get_result.val + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_aqueue_fairness() -> Unit {
+  @stdio.stdout.write("test aqueue fairness ... ")
+  let log = StringBuilder::new()
+  @async.with_task_group(fn(root) {
+    let queue = @aqueue.Queue::new(kind=Unbounded)
+    root.spawn_bg(fn() {
+      for _ in 0..<2 {
+        let x = queue.get()
+        log.write_string("task 1: get => \{x}\n")
+      }
+    })
+    root.spawn_bg(fn() {
+      for _ in 0..<2 {
+        let x = queue.get()
+        log.write_string("task 2: get => \{x}\n")
+      }
+    })
+    @wasip2.sleep(70)
+    queue.put(1)
+    queue.put(2)
+    @wasip2.sleep(70)
+    queue.put(3)
+    queue.put(4)
+  })
+  let expected = (
+    #|task 1: get => 1
+    #|task 2: get => 2
+    #|task 1: get => 3
+    #|task 2: get => 4
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_try_get() -> Unit {
+  @stdio.stdout.write("test try_get ... ")
+  let q : @aqueue.Queue[Int] = @aqueue.Queue::new(kind=Unbounded)
+  if q.try_get().to_string() != "None" {
+    @stdio.stdout.write("FAILED: expected None\n")
+    panic()
+  }
+  if not(q.try_put(42)) {
+    @stdio.stdout.write("FAILED: try_put should return true\n")
+    panic()
+  }
+  if q.try_get().to_string() != "Some(42)" {
+    @stdio.stdout.write("FAILED: expected Some(42)\n")
+    panic()
+  }
+  if q.try_get().to_string() != "None" {
+    @stdio.stdout.write("FAILED: expected None after get\n")
+    panic()
+  }
+  if not(q.try_put(1)) {
+    @stdio.stdout.write("FAILED: try_put(1) should return true\n")
+    panic()
+  }
+  if not(q.try_put(2)) {
+    @stdio.stdout.write("FAILED: try_put(2) should return true\n")
+    panic()
+  }
+  if q.try_get().to_string() != "Some(1)" {
+    @stdio.stdout.write("FAILED: expected Some(1)\n")
+    panic()
+  }
+  if q.try_get().to_string() != "Some(2)" {
+    @stdio.stdout.write("FAILED: expected Some(2)\n")
+    panic()
+  }
+  if q.try_get().to_string() != "None" {
+    @stdio.stdout.write("FAILED: expected None at end\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_with_timeout_normal_exit() -> Unit {
+  @stdio.stdout.write("test with_timeout normal exit ... ")
+  let log = StringBuilder::new()
+  @async.with_task_group(fn(root) {
+    root.spawn_bg(fn() {
+      @wasip2.sleep(300)
+      log.write_string("300ms tick\n")
+    })
+    @async.with_timeout(400, fn() {
+      @wasip2.sleep(200)
+      log.write_string("task finished after 200ms\n")
+    })
+    log.write_string("main task finished\n")
+  })
+  let expected = (
+    #|task finished after 200ms
+    #|main task finished
+    #|300ms tick
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_with_timeout_timeout() -> Unit {
+  @stdio.stdout.write("test with_timeout timeout ... ")
+  let log = StringBuilder::new()
+  @async.with_task_group(fn(root) {
+    root.spawn_bg(fn() {
+      @wasip2.sleep(300)
+      log.write_string("300ms tick\n")
+    })
+    @async.with_timeout(200, fn() {
+      @wasip2.sleep(400) catch {
+        err => {
+          log.write_string("task cancelled\n")
+          raise err
+        }
+      }
+      log.write_string("task finished\n")
+    }) catch {
+      err => log.write_string("`with_timeout` fail with \{err}\n")
+    }
+    log.write_string("main task finished\n")
+  })
+  let expected = (
+    #|task cancelled
+    #|`with_timeout` fail with TimeoutError
+    #|main task finished
+    #|300ms tick
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_with_timeout_opt_normal_exit() -> Unit {
+  @stdio.stdout.write("test with_timeout_opt normal exit ... ")
+  let log = StringBuilder::new()
+  let result : Ref[String] = { val: "" }
+  @async.with_task_group(fn(root) {
+    root.spawn_bg(fn() {
+      @wasip2.sleep(200)
+      log.write_string("200ms tick\n")
+    })
+    result.val = @async.with_timeout_opt(1000, fn() {
+      @wasip2.sleep(100)
+      log.write_string("task finished after 100ms\n")
+      42
+    }).to_string()
+  })
+  let expected_log = (
+    #|task finished after 100ms
+    #|200ms tick
+    #|
+  )
+  if log.to_string() != expected_log {
+    @stdio.stdout.write("FAILED (log)\n")
+    @stdio.stdout.write("expected: " + expected_log + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  if result.val != "Some(42)" {
+    @stdio.stdout.write("FAILED (result)\n")
+    @stdio.stdout.write("expected: Some(42)\n")
+    @stdio.stdout.write("got: " + result.val + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_with_timeout_opt_timeout() -> Unit {
+  @stdio.stdout.write("test with_timeout_opt timeout ... ")
+  let log = StringBuilder::new()
+  let result : Ref[String] = { val: "" }
+  @async.with_task_group(fn(root) {
+    root.spawn_bg(fn() {
+      @wasip2.sleep(200)
+      log.write_string("200ms tick\n")
+    })
+    result.val = @async.with_timeout_opt(100, fn() {
+      try @wasip2.sleep(2000) catch {
+        err => {
+          log.write_string("task cancelled\n")
+          raise err
+        }
+      } noraise {
+        _ => {
+          log.write_string("task finished after 2s\n")
+          42
+        }
+      }
+    }).to_string()
+  })
+  let expected_log = (
+    #|task cancelled
+    #|200ms tick
+    #|
+  )
+  if log.to_string() != expected_log {
+    @stdio.stdout.write("FAILED (log)\n")
+    @stdio.stdout.write("expected: " + expected_log + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  if result.val != "None" {
+    @stdio.stdout.write("FAILED (result)\n")
+    @stdio.stdout.write("expected: None\n")
+    @stdio.stdout.write("got: " + result.val + "\n")
     panic()
   }
   @stdio.stdout.write("ok\n")

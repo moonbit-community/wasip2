@@ -1,5 +1,6 @@
 {
   "import": [
-    "peter-jerry-ye/wasip2/internal/ev"
+    "peter-jerry-ye/wasip2/internal/ev",
+    "peter-jerry-ye/wasip2"
   ]
 }

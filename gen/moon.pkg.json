@@ -14,6 +14,7 @@
     "peter-jerry-ye/wasip2",
     "peter-jerry-ye/wasip2/stdio",
     "peter-jerry-ye/wasip2/async",
-    "peter-jerry-ye/wasip2/async/cond_var"
+    "peter-jerry-ye/wasip2/async/cond_var",
+    "peter-jerry-ye/wasip2/async/aqueue"
   ]
 }
