@@ -982,7 +982,7 @@ async fn test_fs_write_read_remove() -> Unit {
   let test_content = "Hello, WASI Preview 2!\nThis is a test file.\n"
 
   // Write file
-  @fs.write_file(test_path, test_content, create=0o644, truncate=true)
+  @fs.write_file(test_path, test_content, create=true, truncate=true)
 
   // Read file and verify content
   let data = @fs.read_file(test_path)
