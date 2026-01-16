@@ -236,17 +236,12 @@ fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError 
   let dirs = @preopens.get_directories()
   guard dirs.length() > 0 else { raise FsError::NoPreopen }
   let roots : Array[(@types.Descriptor, String)] = []
-  let mut has_root = false
   for i = 0; i < dirs.length(); i = i + 1 {
     let (desc, root_raw) = dirs[i]
     let root = normalize_path(root_raw)
-    if root == "/" {
-      has_root = true
-    }
     roots.push((desc, root))
   }
   if normalized.has_prefix("/") {
-    guard has_root else { raise FsError::PathOutsidePreopens }
     let mut best_desc : @types.Descriptor? = None
     let mut best_root = ""
     for i = 0; i < roots.length(); i = i + 1 {
@@ -284,6 +279,10 @@ fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError 
       let (desc, root) = roots[i]
       if root == "/" {
         continue
+      }
+      // Handle "." preopen (normalized to "") - it matches any relative path
+      if root == "" {
+        return (desc, normalized)
       }
       let root_rel = root[:].view(start_offset=1).to_string()
       if normalized == root_rel || normalized.has_prefix(root_rel + "/") {

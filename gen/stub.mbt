@@ -40,6 +40,8 @@ pub async fn async_run() -> Unit {
   test_lazy_init_multiple_waiters()
   // HTTP tests
   test_http_get_example()
+  // FS tests
+  test_fs_write_read_remove()
   @stdio.stdout.write("All tests passed!\n")
 }
 
@@ -970,5 +972,42 @@ async fn test_http_get_example() -> Unit {
     @stdio.stdout.write("body should contain '<h1>Example Domain</h1>'\n")
     panic()
   }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_fs_write_read_remove() -> Unit {
+  @stdio.stdout.write("test fs write/read/remove ... ")
+  let test_path = "/tmp/wasip2_test_file.txt"
+  let test_content = "Hello, WASI Preview 2!\nThis is a test file.\n"
+
+  // Write file
+  @fs.write_file(test_path, test_content, create=0o644, truncate=true)
+
+  // Read file and verify content
+  let data = @fs.read_file(test_path)
+  let read_content = data.text()
+  if read_content != test_content {
+    @stdio.stdout.write("FAILED (content mismatch)\n")
+    @stdio.stdout.write("expected: " + test_content + "\n")
+    @stdio.stdout.write("got: " + read_content + "\n")
+    panic()
+  }
+
+  // Verify file exists
+  if not(@fs.exists(test_path)) {
+    @stdio.stdout.write("FAILED (file should exist after write)\n")
+    panic()
+  }
+
+  // Remove file
+  @fs.remove(test_path)
+
+  // Verify file no longer exists
+  if @fs.exists(test_path) {
+    @stdio.stdout.write("FAILED (file should not exist after remove)\n")
+    panic()
+  }
+
   @stdio.stdout.write("ok\n")
 }
