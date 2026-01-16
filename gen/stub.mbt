@@ -23,6 +23,11 @@ pub async fn async_run() -> Unit {
   test_with_timeout_timeout()
   test_with_timeout_opt_normal_exit()
   test_with_timeout_opt_timeout()
+  // all/any tests
+  test_all_basic()
+  test_all_preserves_order()
+  test_any_basic()
+  test_any_returns_first_success()
   @stdio.stdout.write("All tests passed!\n")
 }
 
@@ -469,6 +474,144 @@ async fn test_with_timeout_opt_timeout() -> Unit {
     @stdio.stdout.write("FAILED (result)\n")
     @stdio.stdout.write("expected: None\n")
     @stdio.stdout.write("got: " + result.val + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_all_basic() -> Unit {
+  @stdio.stdout.write("test all basic ... ")
+  let results = @async.all(
+    [
+      async fn() {
+        @wasip2.sleep(100)
+        1
+      },
+      async fn() {
+        @wasip2.sleep(50)
+        2
+      },
+      async fn() { 3 },
+    ][:],
+  )
+  if results.to_string() != "[1, 2, 3]" {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: [1, 2, 3]\n")
+    @stdio.stdout.write("got: " + results.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_all_preserves_order() -> Unit {
+  @stdio.stdout.write("test all preserves order ... ")
+  let log = StringBuilder::new()
+  let results = @async.all(
+    [
+      async fn() {
+        @wasip2.sleep(300)
+        log.write_string("task 0\n")
+        0
+      },
+      async fn() {
+        @wasip2.sleep(100)
+        log.write_string("task 1\n")
+        1
+      },
+      async fn() {
+        log.write_string("task 2\n")
+        2
+      },
+    ][:],
+  )
+  let expected_log = (
+    #|task 2
+    #|task 1
+    #|task 0
+    #|
+  )
+  if log.to_string() != expected_log {
+    @stdio.stdout.write("FAILED (log)\n")
+    @stdio.stdout.write("expected: " + expected_log + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  if results.to_string() != "[0, 1, 2]" {
+    @stdio.stdout.write("FAILED (results)\n")
+    @stdio.stdout.write("expected: [0, 1, 2]\n")
+    @stdio.stdout.write("got: " + results.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_any_basic() -> Unit {
+  @stdio.stdout.write("test any basic ... ")
+  let result = @async.any(
+    [
+      async fn() {
+        @wasip2.sleep(300)
+        1
+      },
+      async fn() {
+        @wasip2.sleep(100)
+        2
+      },
+      async fn() {
+        @wasip2.sleep(200)
+        3
+      },
+    ][:],
+  )
+  if result != 2 {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: 2\n")
+    @stdio.stdout.write("got: " + result.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_any_returns_first_success() -> Unit {
+  @stdio.stdout.write("test any returns first success ... ")
+  let log = StringBuilder::new()
+  let result = @async.any(
+    [
+      async fn() {
+        @wasip2.sleep(300)
+        log.write_string("task 0\n")
+        0
+      },
+      async fn() {
+        @wasip2.sleep(100)
+        log.write_string("task 1\n")
+        1
+      },
+      async fn() {
+        @wasip2.sleep(200)
+        log.write_string("task 2\n")
+        2
+      },
+    ][:],
+  )
+  let expected_log = (
+    #|task 1
+    #|
+  )
+  if log.to_string() != expected_log {
+    @stdio.stdout.write("FAILED (log)\n")
+    @stdio.stdout.write("expected: " + expected_log + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  if result != 1 {
+    @stdio.stdout.write("FAILED (result)\n")
+    @stdio.stdout.write("expected: 1\n")
+    @stdio.stdout.write("got: " + result.to_string() + "\n")
     panic()
   }
   @stdio.stdout.write("ok\n")
