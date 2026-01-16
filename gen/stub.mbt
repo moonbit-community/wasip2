@@ -34,6 +34,10 @@ pub async fn async_run() -> Unit {
   test_retry_exponential()
   test_retry_max_retry()
   test_retry_fatal_error()
+  // lazy_init tests
+  test_lazy_init_basic()
+  test_lazy_init_cached()
+  test_lazy_init_multiple_waiters()
   @stdio.stdout.write("All tests passed!\n")
 }
 
@@ -825,6 +829,113 @@ async fn test_retry_fatal_error() -> Unit {
   }
   if not(caught_fatal.val) {
     @stdio.stdout.write("FAILED (should catch FatalError)\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_lazy_init_basic() -> Unit {
+  @stdio.stdout.write("test lazy_init basic ... ")
+  let log = StringBuilder::new()
+  let lazy_val = @async.lazy_init(fn() {
+    log.write_string("computing\n")
+    @wasip2.sleep(100)
+    42
+  })
+  log.write_string("before wait\n")
+  let result = lazy_val.wait()
+  log.write_string("result: \{result}\n")
+  let expected = (
+    #|before wait
+    #|computing
+    #|result: 42
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_lazy_init_cached() -> Unit {
+  @stdio.stdout.write("test lazy_init cached ... ")
+  let log = StringBuilder::new()
+  let compute_count : Ref[Int] = { val: 0 }
+  let lazy_val = @async.lazy_init(fn() {
+    compute_count.val += 1
+    log.write_string("computing\n")
+    100
+  })
+  let r1 = lazy_val.wait()
+  log.write_string("first: \{r1}\n")
+  let r2 = lazy_val.wait()
+  log.write_string("second: \{r2}\n")
+  let r3 = lazy_val.wait()
+  log.write_string("third: \{r3}\n")
+  let expected = (
+    #|computing
+    #|first: 100
+    #|second: 100
+    #|third: 100
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED (log)\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  if compute_count.val != 1 {
+    @stdio.stdout.write("FAILED (compute_count should be 1)\n")
+    @stdio.stdout.write("got: " + compute_count.val.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_lazy_init_multiple_waiters() -> Unit {
+  @stdio.stdout.write("test lazy_init multiple waiters ... ")
+  let log = StringBuilder::new()
+  let lazy_val = @async.lazy_init(fn() {
+    log.write_string("start computing\n")
+    @wasip2.sleep(200)
+    log.write_string("done computing\n")
+    42
+  })
+  @async.with_task_group(fn(root) {
+    root.spawn_bg(fn() {
+      let r = lazy_val.wait()
+      log.write_string("waiter 1: \{r}\n")
+    })
+    root.spawn_bg(fn() {
+      @wasip2.sleep(50)
+      let r = lazy_val.wait()
+      log.write_string("waiter 2: \{r}\n")
+    })
+    root.spawn_bg(fn() {
+      @wasip2.sleep(100)
+      let r = lazy_val.wait()
+      log.write_string("waiter 3: \{r}\n")
+    })
+  })
+  let expected = (
+    #|start computing
+    #|done computing
+    #|waiter 1: 42
+    #|waiter 2: 42
+    #|waiter 3: 42
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
     panic()
   }
   @stdio.stdout.write("ok\n")
