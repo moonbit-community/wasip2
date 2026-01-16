@@ -8,11 +8,113 @@ pub fn run() -> Result[Unit, Unit] {
 
 ///|
 pub async fn async_run() -> Unit {
-  @stdio.stdout.write("Hello World!\n")
-  @stdio.stdout.write("This is a test of WASI stdio.\n")
-  for i in 0..<5 {
-    @stdio.stdout.write("Tick " + (5 - i).to_string() + "\n")
-    @wasip2.sleep(1000)
+  test_cond_var_cancellation_no_swallow()
+  test_cond_var_fairness()
+  test_cond_var_broadcast()
+  @stdio.stdout.write("All tests passed!\n")
+}
+
+///|
+async fn test_cond_var_cancellation_no_swallow() -> Unit {
+  @stdio.stdout.write("test cond var cancellation no_swallow ... ")
+  let log = StringBuilder::new()
+  @async.with_task_group(root => {
+    let cond = @cond_var.Cond::new()
+    let wait_task = root.spawn(allow_failure=true, fn() {
+      cond.wait()
+      log.write_string("waiter 1 succeed\n")
+    })
+    root.spawn_bg(no_wait=true, fn() {
+      cond.wait()
+      log.write_string("waiter 2 succeed\n")
+    })
+    @wasip2.sleep(100)
+    cond.signal()
+    wait_task.cancel()
+    @wasip2.sleep(100)
+  })
+  let expected = (
+    #|waiter 1 succeed
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
   }
-  @stdio.stdout.write("Boom!\n")
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_cond_var_fairness() -> Unit {
+  @stdio.stdout.write("test cond var fairness ... ")
+  let log = StringBuilder::new()
+  @async.with_task_group(root => {
+    let cond = @cond_var.Cond::new()
+    root.spawn_bg(fn() {
+      for _ in 0..<3 {
+        cond.wait()
+        log.write_string("task 1 received signal\n")
+      }
+    })
+    root.spawn_bg(fn() {
+      @wasip2.sleep(100)
+      for _ in 0..<3 {
+        cond.wait()
+        log.write_string("task 2 received signal\n")
+      }
+    })
+    @wasip2.sleep(200)
+    for _ in 0..<6 {
+      cond.signal()
+      @wasip2.sleep(50)
+    }
+  })
+  let expected = (
+    #|task 1 received signal
+    #|task 2 received signal
+    #|task 1 received signal
+    #|task 2 received signal
+    #|task 1 received signal
+    #|task 2 received signal
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_cond_var_broadcast() -> Unit {
+  @stdio.stdout.write("test cond var broadcast ... ")
+  let log = StringBuilder::new()
+  @async.with_task_group(root => {
+    let cond = @cond_var.Cond::new()
+    for i in 0..<3 {
+      root.spawn_bg(fn() {
+        cond.wait()
+        log.write_string("task \{i} received signal\n")
+      })
+    }
+    @wasip2.sleep(100)
+    cond.broadcast()
+  })
+  let expected = (
+    #|task 0 received signal
+    #|task 1 received signal
+    #|task 2 received signal
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
 }
