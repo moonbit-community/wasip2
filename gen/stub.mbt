@@ -28,6 +28,12 @@ pub async fn async_run() -> Unit {
   test_all_preserves_order()
   test_any_basic()
   test_any_returns_first_success()
+  // retry tests
+  test_retry_immediate()
+  test_retry_fixed()
+  test_retry_exponential()
+  test_retry_max_retry()
+  test_retry_fatal_error()
   @stdio.stdout.write("All tests passed!\n")
 }
 
@@ -612,6 +618,213 @@ async fn test_any_returns_first_success() -> Unit {
     @stdio.stdout.write("FAILED (result)\n")
     @stdio.stdout.write("expected: 1\n")
     @stdio.stdout.write("got: " + result.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_retry_immediate() -> Unit {
+  @stdio.stdout.write("test retry immediate ... ")
+  let log = StringBuilder::new()
+  let counter : Ref[Int] = { val: 0 }
+  @async.retry(@async.Immediate, fn() {
+    counter.val += 1
+    log.write_string("attempt \{counter.val}\n")
+    if counter.val < 3 {
+      fail("not yet")
+    }
+  })
+  let expected = (
+    #|attempt 1
+    #|attempt 2
+    #|attempt 3
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_retry_fixed() -> Unit {
+  @stdio.stdout.write("test retry fixed delay ... ")
+  let log = StringBuilder::new()
+  let counter : Ref[Int] = { val: 0 }
+  @async.with_task_group(fn(root) {
+    root.spawn_bg(fn() {
+      for i in 0..<4 {
+        @wasip2.sleep(120)
+        log.write_string("tick \{i}\n")
+      }
+    })
+    @async.retry(@async.FixedDelay(200), fn() {
+      counter.val += 1
+      log.write_string("attempt \{counter.val}\n")
+      if counter.val < 3 {
+        fail("not yet")
+      }
+    })
+  })
+  // Timing:
+  // attempt 1 at 0ms - fail
+  // tick 0 at 120ms
+  // attempt 2 at 200ms - fail
+  // tick 1 at 240ms
+  // tick 2 at 360ms
+  // attempt 3 at 400ms - success
+  // tick 3 at 480ms
+  let expected = (
+    #|attempt 1
+    #|tick 0
+    #|attempt 2
+    #|tick 1
+    #|tick 2
+    #|attempt 3
+    #|tick 3
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_retry_exponential() -> Unit {
+  @stdio.stdout.write("test retry exponential delay ... ")
+  let log = StringBuilder::new()
+  let counter : Ref[Int] = { val: 0 }
+  @async.with_task_group(fn(root) {
+    root.spawn_bg(fn() {
+      for i in 0..<6 {
+        @wasip2.sleep(120)
+        log.write_string("tick \{i}\n")
+      }
+    })
+    @async.retry(
+      @async.ExponentialDelay(initial=150, factor=2.0, maximum=400),
+      fn() {
+        counter.val += 1
+        log.write_string("attempt \{counter.val}\n")
+        if counter.val < 3 {
+          fail("not yet")
+        }
+      },
+    )
+  })
+  // Timing:
+  // attempt 1 at 0ms - fail - sleep 150ms
+  // tick 0 at 120ms
+  // attempt 2 at 150ms - fail - sleep 300ms
+  // tick 1 at 240ms
+  // tick 2 at 360ms
+  // attempt 3 at 450ms - success
+  // tick 3 at 480ms
+  // tick 4 at 600ms
+  // tick 5 at 720ms
+  let expected = (
+    #|attempt 1
+    #|tick 0
+    #|attempt 2
+    #|tick 1
+    #|tick 2
+    #|attempt 3
+    #|tick 3
+    #|tick 4
+    #|tick 5
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_retry_max_retry() -> Unit {
+  @stdio.stdout.write("test retry max_retry ... ")
+  let log = StringBuilder::new()
+  let counter : Ref[Int] = { val: 0 }
+  let error_caught : Ref[Bool] = { val: false }
+  try {
+    @async.retry(@async.Immediate, max_retry=2, fn() {
+      counter.val += 1
+      log.write_string("attempt \{counter.val}\n")
+      fail("always fail")
+    })
+  } catch {
+    _ => error_caught.val = true
+  }
+  let expected = (
+    #|attempt 1
+    #|attempt 2
+    #|attempt 3
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED (log)\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  if not(error_caught.val) {
+    @stdio.stdout.write("FAILED (error should be caught)\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+suberror FatalError derive(Show)
+
+///|
+async fn test_retry_fatal_error() -> Unit {
+  @stdio.stdout.write("test retry fatal_error ... ")
+  let log = StringBuilder::new()
+  let counter : Ref[Int] = { val: 0 }
+  let caught_fatal : Ref[Bool] = { val: false }
+  try {
+    @async.retry(
+      @async.Immediate,
+      fatal_error=fn(err) { err is FatalError },
+      fn() {
+        counter.val += 1
+        log.write_string("attempt \{counter.val}\n")
+        if counter.val >= 3 {
+          raise FatalError
+        }
+        fail("transient error")
+      },
+    )
+  } catch {
+    FatalError => caught_fatal.val = true
+    _ => ()
+  }
+  let expected = (
+    #|attempt 1
+    #|attempt 2
+    #|attempt 3
+    #|
+  )
+  if log.to_string() != expected {
+    @stdio.stdout.write("FAILED (log)\n")
+    @stdio.stdout.write("expected: " + expected + "\n")
+    @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  if not(caught_fatal.val) {
+    @stdio.stdout.write("FAILED (should catch FatalError)\n")
     panic()
   }
   @stdio.stdout.write("ok\n")
