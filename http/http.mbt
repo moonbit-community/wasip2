@@ -173,7 +173,7 @@ async fn read_body(incoming_body : @types.IncomingBody) -> Bytes {
   }
   stream.drop()
   incoming_body.finish().drop()
-  incoming_body.drop()
+  // Note: incoming_body is consumed by finish(), no need to drop
 
   // Concatenate chunks
   let total_len = chunks.iter().fold(init=0, fn(acc, chunk) { acc + chunk.length() })
@@ -201,8 +201,6 @@ pub async fn request(
 
   // Create headers
   let fields = @types.Fields::fields()
-  let host_bytes = url_parts.authority.to_array().map(fn(c) { c.to_int().to_byte() })
-  fields.set("Host", [FixedArray::from_array(host_bytes)]).unwrap()
   for k, v in headers {
     let v_bytes = v.to_array().map(fn(c) { c.to_int().to_byte() })
     fields.append(k, FixedArray::from_array(v_bytes)).unwrap()
@@ -229,7 +227,7 @@ pub async fn request(
     Ok(f) => f
     Err(e) => raise HttpError::RequestFailed(e)
   }
-  req.drop()
+  // Note: req ownership is transferred to handle, no need to drop
 
   // Wait for response
   let pollable = future_response.subscribe()

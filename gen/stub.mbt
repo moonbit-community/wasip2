@@ -38,6 +38,8 @@ pub async fn async_run() -> Unit {
   test_lazy_init_basic()
   test_lazy_init_cached()
   test_lazy_init_multiple_waiters()
+  // HTTP tests
+  test_http_get_example()
   @stdio.stdout.write("All tests passed!\n")
 }
 
@@ -936,6 +938,36 @@ async fn test_lazy_init_multiple_waiters() -> Unit {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
     @stdio.stdout.write("got: " + log.to_string() + "\n")
+    panic()
+  }
+  @stdio.stdout.write("ok\n")
+}
+
+///|
+async fn test_http_get_example() -> Unit {
+  @stdio.stdout.write("test http get example.com ... ")
+  let (response, body) = @http.get("https://example.com")
+  if response.status != 200 {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("expected status: 200\n")
+    @stdio.stdout.write("got: " + response.status.to_string() + "\n")
+    panic()
+  }
+  // Check that body contains expected HTML content
+  let body_str = String::from_array(body.iter().map(fn(b) { b.to_int().unsafe_to_char() }).collect())
+  if not(body_str.contains("<html")) {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("body should contain '<html'\n")
+    panic()
+  }
+  if not(body_str.contains("<title>Example Domain</title>")) {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("body should contain '<title>Example Domain</title>'\n")
+    panic()
+  }
+  if not(body_str.contains("<h1>Example Domain</h1>")) {
+    @stdio.stdout.write("FAILED\n")
+    @stdio.stdout.write("body should contain '<h1>Example Domain</h1>'\n")
     panic()
   }
   @stdio.stdout.write("ok\n")
