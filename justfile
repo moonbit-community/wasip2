@@ -1,5 +1,5 @@
 run target=("debug"): (build target)
-    wasmtime run -S http=y -S p3=y -W component-model=y -W component-model-async=y target/cli.wasm
+    wasmtime run --dir /tmp -S http=y -S p3=y -W component-model=y -W component-model-async=y target/cli.wasm
 
 build target=("debug"):
     @echo 'Building targeting {{ target }}'

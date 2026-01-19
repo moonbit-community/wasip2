@@ -1,5 +1,10 @@
 {
   "import": [
-    "peter-jerry-ye/wasip2/internal/ev"
+    "peter-jerry-ye/wasip2/internal/ev",
+    "peter-jerry-ye/wasip2",
+    "peter-jerry-ye/wasip2/async/semaphore",
+    "peter-jerry-ye/wasip2/async/aqueue",
+    "peter-jerry-ye/wasip2/internal/wasi/clocks/monotonicClock",
+    "moonbitlang/core/cmp"
   ]
 }

@@ -151,15 +151,15 @@ fn descriptor_flags(mode : Mode) -> @types.DescriptorFlags {
 
 ///|
 fn make_open_flags(
-  create : Int?,
-  truncate : Bool?,
+  create : Bool,
+  truncate : Bool,
   directory : Bool,
 ) -> @types.OpenFlags {
   let mut flags = @types.OpenFlags::default()
-  if create is Some(_) {
+  if create {
     flags = flags.set(@types.OpenFlagsFlag::CREATE)
   }
-  if truncate is Some(true) {
+  if truncate {
     flags = flags.set(@types.OpenFlagsFlag::TRUNCATE)
   }
   if directory {
@@ -236,17 +236,12 @@ fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError 
   let dirs = @preopens.get_directories()
   guard dirs.length() > 0 else { raise FsError::NoPreopen }
   let roots : Array[(@types.Descriptor, String)] = []
-  let mut has_root = false
   for i = 0; i < dirs.length(); i = i + 1 {
     let (desc, root_raw) = dirs[i]
     let root = normalize_path(root_raw)
-    if root == "/" {
-      has_root = true
-    }
     roots.push((desc, root))
   }
   if normalized.has_prefix("/") {
-    guard has_root else { raise FsError::PathOutsidePreopens }
     let mut best_desc : @types.Descriptor? = None
     let mut best_root = ""
     for i = 0; i < roots.length(); i = i + 1 {
@@ -284,6 +279,10 @@ fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError 
       let (desc, root) = roots[i]
       if root == "/" {
         continue
+      }
+      // Handle "." preopen (normalized to "") - it matches any relative path
+      if root == "" {
+        return (desc, normalized)
       }
       let root_rel = root[:].view(start_offset=1).to_string()
       if normalized == root_rel || normalized.has_prefix(root_rel + "/") {
@@ -366,11 +365,11 @@ pub fn preopens() -> Array[Preopen] {
 ///|
 pub fn open(
   path : StringView,
-  mode~ : Mode,
+  mode? : Mode = ReadOnly,
   sync? : SyncMode = NoSync,
   append? : Bool = false,
-  create? : Int,
-  truncate? : Bool,
+  create? : Bool = false,
+  truncate? : Bool = false,
 ) -> File raise FsError {
   let (desc, rel) = resolve_path(path)
   let flags = descriptor_flags(mode)
@@ -397,17 +396,15 @@ pub fn open(
 ///|
 pub fn create(
   path : StringView,
-  permission~ : Int,
   sync? : SyncMode = NoSync,
 ) -> File raise FsError {
-  ignore(permission)
-  open(path, mode=ReadWrite, sync~, create=0, truncate=true)
+  open(path, mode=ReadWrite, sync~, create=true, truncate=true)
 }
 
 ///|
 pub fn opendir(path : StringView) -> Directory raise FsError {
   let (desc, rel) = resolve_path(path)
-  let open_flags = make_open_flags(None, None, true)
+  let open_flags = make_open_flags(false, false, true)
   let dir_desc = if rel == "" {
     desc
   } else {
@@ -572,17 +569,10 @@ pub fn symlink(target~ : StringView, path : StringView) -> Unit raise FsError {
 }
 
 ///|
-pub async fn read_file(
-  path : StringView,
-  sync_timestamp? : Bool = false,
-) -> &@io.Data {
+pub async fn read_file(path : StringView) -> &@io.Data {
   let file = open(path, mode=ReadOnly)
   defer file.close()
-  let data = file.read_all()
-  if sync_timestamp {
-    file.sync(only_data=true)
-  }
-  data
+  file.read_all()
 }
 
 ///|
@@ -601,17 +591,12 @@ pub async fn write_file(
   data : &@io.Data,
   sync? : SyncMode = NoSync,
   append? : Bool = false,
-  create? : Int,
-  truncate? : Bool,
+  create? : Bool = false,
+  truncate? : Bool = false,
 ) -> Unit {
-  let file = open(path, mode=WriteOnly, sync~, append~, create?, truncate?)
+  let file = open(path, mode=WriteOnly, sync~, append~, create~, truncate~)
   defer file.close()
   file.write(data)
-  if sync is Data {
-    file.sync(only_data=true)
-  } else if sync is Full {
-    file.sync(only_data=false)
-  }
 }
 
 ///|
@@ -622,11 +607,11 @@ pub async fn write_text_file(
   encoding? : @io.Encoding = UTF8,
   sync? : SyncMode = NoSync,
   append? : Bool = false,
-  create? : Int,
-  truncate? : Bool,
+  create? : Bool = false,
+  truncate? : Bool = false,
 ) -> Unit {
   guard encoding is UTF8
-  write_file(path, data, sync~, append~, create?, truncate?)
+  write_file(path, data, sync~, append~, create~, truncate~)
 }
 
 ///|
