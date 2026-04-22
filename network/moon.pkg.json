@@ -1,5 +1,6 @@
 {
   "import": [
+    "moonbitlang/core/cmp",
     "peter-jerry-ye/wasip2/internal/ev",
     { "path": "peter-jerry-ye/wasip2/internal/wasi/sockets/network", "alias": "wasiNetwork" },
     "peter-jerry-ye/wasip2/internal/wasi/sockets/tcp",
