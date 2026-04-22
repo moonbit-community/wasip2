@@ -1,0 +1,9 @@
+import {
+  "moonbitlang/core/cmp",
+  "peter-jerry-ye/wasip2/async/io",
+  "peter-jerry-ye/wasip2/async/semaphore",
+  "peter-jerry-ye/wasip2/internal/wasi/filesystem/types" @types,
+  "peter-jerry-ye/wasip2/internal/wasi/filesystem/preopens" @preopens,
+  "peter-jerry-ye/wasip2/internal/wasi/clocks/wallClock" @wallClock,
+  "peter-jerry-ye/wasip2/async",
+}

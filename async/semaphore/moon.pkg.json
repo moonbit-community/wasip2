@@ -1,6 +1,0 @@
-{
-  "import": [
-    "moonbitlang/core/deque",
-    "peter-jerry-ye/wasip2/internal/ev"
-  ]
-}

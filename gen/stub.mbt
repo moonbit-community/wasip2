@@ -64,10 +64,9 @@ async fn test_cond_var_cancellation_no_swallow() -> Unit {
     wait_task.cancel()
     @wasip2.sleep(100)
   })
-  let expected = (
+  let expected =
     #|waiter 1 succeed
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -102,7 +101,7 @@ async fn test_cond_var_fairness() -> Unit {
       @wasip2.sleep(50)
     }
   })
-  let expected = (
+  let expected =
     #|task 1 received signal
     #|task 2 received signal
     #|task 1 received signal
@@ -110,7 +109,6 @@ async fn test_cond_var_fairness() -> Unit {
     #|task 1 received signal
     #|task 2 received signal
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -135,12 +133,11 @@ async fn test_cond_var_broadcast() -> Unit {
     @wasip2.sleep(100)
     cond.broadcast()
   })
-  let expected = (
+  let expected =
     #|task 0 received signal
     #|task 1 received signal
     #|task 2 received signal
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -169,7 +166,7 @@ async fn test_aqueue_basic() -> Unit {
       }
     })
   })
-  let expected = (
+  let expected =
     #|put(0)
     #|get => 0
     #|put(1)
@@ -183,7 +180,6 @@ async fn test_aqueue_basic() -> Unit {
     #|put(5)
     #|get => 5
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -212,11 +208,10 @@ async fn test_aqueue_multi_reader() -> Unit {
     queue.put(1)
     queue.put(2)
   })
-  let expected = (
+  let expected =
     #|task 2: get => 1
     #|task 1: get => 2
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -242,10 +237,9 @@ async fn test_aqueue_cancellation_no_swallow() -> Unit {
     @wasip2.sleep(100)
     try_get_result.val = q.try_get().to_string()
   })
-  let expected_log = (
+  let expected_log =
     #|get() => 42
     #|
-  )
   if log.to_string() != expected_log {
     @stdio.stdout.write("FAILED (log)\n")
     @stdio.stdout.write("expected: " + expected_log + "\n")
@@ -286,13 +280,12 @@ async fn test_aqueue_fairness() -> Unit {
     queue.put(3)
     queue.put(4)
   })
-  let expected = (
+  let expected =
     #|task 1: get => 1
     #|task 2: get => 2
     #|task 1: get => 3
     #|task 2: get => 4
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -310,7 +303,7 @@ async fn test_try_get() -> Unit {
     @stdio.stdout.write("FAILED: expected None\n")
     panic()
   }
-  if !(q.try_put(42)) {
+  if !q.try_put(42) {
     @stdio.stdout.write("FAILED: try_put should return true\n")
     panic()
   }
@@ -322,11 +315,11 @@ async fn test_try_get() -> Unit {
     @stdio.stdout.write("FAILED: expected None after get\n")
     panic()
   }
-  if !(q.try_put(1)) {
+  if !q.try_put(1) {
     @stdio.stdout.write("FAILED: try_put(1) should return true\n")
     panic()
   }
-  if !(q.try_put(2)) {
+  if !q.try_put(2) {
     @stdio.stdout.write("FAILED: try_put(2) should return true\n")
     panic()
   }
@@ -360,12 +353,11 @@ async fn test_with_timeout_normal_exit() -> Unit {
     })
     log.write_string("main task finished\n")
   })
-  let expected = (
+  let expected =
     #|task finished after 200ms
     #|main task finished
     #|300ms tick
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -397,13 +389,12 @@ async fn test_with_timeout_timeout() -> Unit {
     }
     log.write_string("main task finished\n")
   })
-  let expected = (
+  let expected =
     #|task cancelled
     #|`with_timeout` fail with TimeoutError
     #|main task finished
     #|300ms tick
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -429,11 +420,10 @@ async fn test_with_timeout_opt_normal_exit() -> Unit {
       42
     }).to_string()
   })
-  let expected_log = (
+  let expected_log =
     #|task finished after 100ms
     #|200ms tick
     #|
-  )
   if log.to_string() != expected_log {
     @stdio.stdout.write("FAILED (log)\n")
     @stdio.stdout.write("expected: " + expected_log + "\n")
@@ -473,11 +463,10 @@ async fn test_with_timeout_opt_timeout() -> Unit {
       }
     }).to_string()
   })
-  let expected_log = (
+  let expected_log =
     #|task cancelled
     #|200ms tick
     #|
-  )
   if log.to_string() != expected_log {
     @stdio.stdout.write("FAILED (log)\n")
     @stdio.stdout.write("expected: " + expected_log + "\n")
@@ -540,12 +529,11 @@ async fn test_all_preserves_order() -> Unit {
       },
     ][:],
   )
-  let expected_log = (
+  let expected_log =
     #|task 2
     #|task 1
     #|task 0
     #|
-  )
   if log.to_string() != expected_log {
     @stdio.stdout.write("FAILED (log)\n")
     @stdio.stdout.write("expected: " + expected_log + "\n")
@@ -612,10 +600,9 @@ async fn test_any_returns_first_success() -> Unit {
       },
     ][:],
   )
-  let expected_log = (
+  let expected_log =
     #|task 1
     #|
-  )
   if log.to_string() != expected_log {
     @stdio.stdout.write("FAILED (log)\n")
     @stdio.stdout.write("expected: " + expected_log + "\n")
@@ -643,12 +630,11 @@ async fn test_retry_immediate() -> Unit {
       fail("not yet")
     }
   })
-  let expected = (
+  let expected =
     #|attempt 1
     #|attempt 2
     #|attempt 3
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -686,7 +672,7 @@ async fn test_retry_fixed() -> Unit {
   // tick 2 at 360ms
   // attempt 3 at 400ms - success
   // tick 3 at 480ms
-  let expected = (
+  let expected =
     #|attempt 1
     #|tick 0
     #|attempt 2
@@ -695,7 +681,6 @@ async fn test_retry_fixed() -> Unit {
     #|attempt 3
     #|tick 3
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -738,7 +723,7 @@ async fn test_retry_exponential() -> Unit {
   // tick 3 at 480ms
   // tick 4 at 600ms
   // tick 5 at 720ms
-  let expected = (
+  let expected =
     #|attempt 1
     #|tick 0
     #|attempt 2
@@ -749,7 +734,6 @@ async fn test_retry_exponential() -> Unit {
     #|tick 4
     #|tick 5
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -765,28 +749,25 @@ async fn test_retry_max_retry() -> Unit {
   let log = StringBuilder::new()
   let counter : Ref[Int] = { val: 0 }
   let error_caught : Ref[Bool] = { val: false }
-  try {
-    @async.retry(@async.Immediate, max_retry=2, fn() raise {
-      counter.val += 1
-      log.write_string("attempt \{counter.val}\n")
-      fail("always fail")
-    })
-  } catch {
+  @async.retry(@async.Immediate, max_retry=2, fn() raise {
+    counter.val += 1
+    log.write_string("attempt \{counter.val}\n")
+    fail("always fail")
+  }) catch {
     _ => error_caught.val = true
   }
-  let expected = (
+  let expected =
     #|attempt 1
     #|attempt 2
     #|attempt 3
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED (log)\n")
     @stdio.stdout.write("expected: " + expected + "\n")
     @stdio.stdout.write("got: " + log.to_string() + "\n")
     panic()
   }
-  if !(error_caught.val) {
+  if !error_caught.val {
     @stdio.stdout.write("FAILED (error should be caught)\n")
     panic()
   }
@@ -802,36 +783,29 @@ async fn test_retry_fatal_error() -> Unit {
   let log = StringBuilder::new()
   let counter : Ref[Int] = { val: 0 }
   let caught_fatal : Ref[Bool] = { val: false }
-  try {
-    @async.retry(
-      @async.Immediate,
-      fatal_error=fn(err) { err is FatalError },
-      fn() raise {
-        counter.val += 1
-        log.write_string("attempt \{counter.val}\n")
-        if counter.val >= 3 {
-          raise FatalError
-        }
-        fail("transient error")
-      },
-    )
-  } catch {
+  @async.retry(@async.Immediate, fatal_error=fn(err) { err is FatalError }, fn() raise {
+    counter.val += 1
+    log.write_string("attempt \{counter.val}\n")
+    if counter.val >= 3 {
+      raise FatalError
+    }
+    fail("transient error")
+  }) catch {
     FatalError => caught_fatal.val = true
     _ => ()
   }
-  let expected = (
+  let expected =
     #|attempt 1
     #|attempt 2
     #|attempt 3
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED (log)\n")
     @stdio.stdout.write("expected: " + expected + "\n")
     @stdio.stdout.write("got: " + log.to_string() + "\n")
     panic()
   }
-  if !(caught_fatal.val) {
+  if !caught_fatal.val {
     @stdio.stdout.write("FAILED (should catch FatalError)\n")
     panic()
   }
@@ -850,12 +824,11 @@ async fn test_lazy_init_basic() -> Unit {
   log.write_string("before wait\n")
   let result = lazy_val.wait()
   log.write_string("result: \{result}\n")
-  let expected = (
+  let expected =
     #|before wait
     #|computing
     #|result: 42
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -881,13 +854,12 @@ async fn test_lazy_init_cached() -> Unit {
   log.write_string("second: \{r2}\n")
   let r3 = lazy_val.wait()
   log.write_string("third: \{r3}\n")
-  let expected = (
+  let expected =
     #|computing
     #|first: 100
     #|second: 100
     #|third: 100
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED (log)\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -928,14 +900,13 @@ async fn test_lazy_init_multiple_waiters() -> Unit {
       log.write_string("waiter 3: \{r}\n")
     })
   })
-  let expected = (
+  let expected =
     #|start computing
     #|done computing
     #|waiter 1: 42
     #|waiter 2: 42
     #|waiter 3: 42
     #|
-  )
   if log.to_string() != expected {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: " + expected + "\n")
@@ -956,18 +927,20 @@ async fn test_http_get_example() -> Unit {
     panic()
   }
   // Check that body contains expected HTML content
-  let body_str = String::from_array(body.iter().map(fn(b) { b.to_int().unsafe_to_char() }).collect())
-  if !(body_str.contains("<html")) {
+  let body_str = String::from_array(
+    body.iter().map(fn(b) { b.to_int().unsafe_to_char() }).collect(),
+  )
+  if !body_str.contains("<html") {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("body should contain '<html'\n")
     panic()
   }
-  if !(body_str.contains("<title>Example Domain</title>")) {
+  if !body_str.contains("<title>Example Domain</title>") {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("body should contain '<title>Example Domain</title>'\n")
     panic()
   }
-  if !(body_str.contains("<h1>Example Domain</h1>")) {
+  if !body_str.contains("<h1>Example Domain</h1>") {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("body should contain '<h1>Example Domain</h1>'\n")
     panic()
@@ -995,7 +968,7 @@ async fn test_fs_write_read_remove() -> Unit {
   }
 
   // Verify file exists
-  if !(@fs.exists(test_path)) {
+  if !@fs.exists(test_path) {
     @stdio.stdout.write("FAILED (file should exist after write)\n")
     panic()
   }

@@ -49,7 +49,7 @@ pub fn Coroutine::wake(self : Coroutine) -> Unit {
 ///|
 pub fn is_being_cancelled() -> Bool {
   let coro = current_coroutine()
-  coro.cancelled && !(coro.shielded)
+  coro.cancelled && !coro.shielded
 }
 
 ///|
@@ -66,7 +66,7 @@ pub fn Coroutine::cancel(self : Coroutine) -> Unit {
 ///|
 pub async fn pause() -> Unit raise Cancelled {
   guard scheduler.curr_coro is Some(coro)
-  if coro.cancelled && !(coro.shielded) {
+  if coro.cancelled && !coro.shielded {
     raise Cancelled::Cancelled
   }
   async_suspend(fn(ok_cont, err_cont) {
@@ -80,7 +80,7 @@ pub async fn pause() -> Unit raise Cancelled {
 ///|
 pub async fn suspend() -> Unit raise Cancelled {
   guard scheduler.curr_coro is Some(coro)
-  if coro.cancelled && !(coro.shielded) {
+  if coro.cancelled && !coro.shielded {
     raise Cancelled::Cancelled
   }
   scheduler.blocking += 1
@@ -136,7 +136,7 @@ fn Coroutine::unwrap(self : Coroutine) -> Unit raise {
 ///|
 pub async fn Coroutine::wait(target : Coroutine) -> Unit {
   guard scheduler.curr_coro is Some(coro)
-  guard !(physical_equal(coro, target))
+  guard !physical_equal(coro, target)
   match target.state {
     Done => return
     Fail(err) => raise err

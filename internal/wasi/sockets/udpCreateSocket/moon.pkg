@@ -1,0 +1,6 @@
+import {
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/network" @network,
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/udp" @udp,
+}
+
+warnings = "-44"

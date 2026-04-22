@@ -121,7 +121,10 @@ fn split_authority_path(s : String) -> (String, String) {
   let chars = s.to_array()
   for i = 0; i < chars.length(); i = i + 1 {
     if chars[i] == '/' {
-      return (String::from_array(chars[:i].to_array()), String::from_array(chars[i:].to_array()))
+      return (
+        String::from_array(chars[:i].to_array()),
+        String::from_array(chars[i:].to_array()),
+      )
     }
   }
   (s, "/")
@@ -132,14 +135,19 @@ fn extract_headers(fields : @types.Fields) -> Map[String, String] {
   let result : Map[String, String] = {}
   for entry in fields.entries() {
     let (name, value) = entry
-    result[name] = String::from_array(value.map(fn(b) { b.to_int().unsafe_to_char() }))
+    result[name] = String::from_array(
+      value.map(fn(b) { b.to_int().unsafe_to_char() }),
+    )
   }
   fields.drop()
   result
 }
 
 ///|
-async fn write_all_to_stream(stream : @streams.OutputStream, data : Bytes) -> Unit {
+async fn write_all_to_stream(
+  stream : @streams.OutputStream,
+  data : Bytes,
+) -> Unit {
   let mut offset = 0
   while offset < data.length() {
     let pollable = stream.subscribe()
@@ -165,11 +173,7 @@ async fn read_body(incoming_body : @types.IncomingBody) -> Bytes {
     let pollable = stream.subscribe()
     @ev.suspend_for_pollable(pollable)
     match stream.read(65536) {
-      Ok(data) => {
-        if data.length() > 0 {
-          chunks.push(Bytes::from_array(data))
-        }
-      }
+      Ok(data) => if data.length() > 0 { chunks.push(Bytes::from_array(data)) }
       Err(@streams.StreamError::Closed) => break
       Err(_) => break
     }
@@ -179,7 +183,9 @@ async fn read_body(incoming_body : @types.IncomingBody) -> Bytes {
   // Note: incoming_body is consumed by finish(), no need to drop
 
   // Concatenate chunks
-  let total_len = chunks.iter().fold(init=0, fn(acc, chunk) { acc + chunk.length() })
+  let total_len = chunks
+    .iter()
+    .fold(init=0, fn(acc, chunk) { acc + chunk.length() })
   let arr : FixedArray[Byte] = FixedArray::make(total_len, b'\x00')
   let mut offset = 0
   for chunk in chunks {
@@ -196,8 +202,8 @@ async fn read_body(incoming_body : @types.IncomingBody) -> Bytes {
 pub async fn request(
   meth : Method,
   url : String,
-  headers~ : Map[String, String] = {},
-  body~ : Bytes = Bytes::make(0, 0),
+  headers? : Map[String, String] = {},
+  body? : Bytes = Bytes::make(0, 0),
 ) -> (Response, Bytes) {
   // Parse URL
   let url_parts = parse_url(url)
@@ -262,7 +268,7 @@ pub async fn request(
 /// Perform an HTTP GET request.
 pub async fn get(
   url : String,
-  headers~ : Map[String, String] = {},
+  headers? : Map[String, String] = {},
 ) -> (Response, Bytes) {
   request(Get, url, headers~)
 }
@@ -272,7 +278,7 @@ pub async fn get(
 pub async fn post(
   url : String,
   body : Bytes,
-  headers~ : Map[String, String] = {},
+  headers? : Map[String, String] = {},
 ) -> (Response, Bytes) {
   request(Post, url, headers~, body~)
 }
@@ -282,7 +288,7 @@ pub async fn post(
 pub async fn put(
   url : String,
   body : Bytes,
-  headers~ : Map[String, String] = {},
+  headers? : Map[String, String] = {},
 ) -> (Response, Bytes) {
   request(Put, url, headers~, body~)
 }

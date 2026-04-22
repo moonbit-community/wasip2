@@ -1,0 +1,11 @@
+import {
+  "moonbitlang/core/cmp",
+  "moonbitlang/core/debug",
+  "peter-jerry-ye/wasip2/internal/ev",
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/network" @wasiNetwork,
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/tcp",
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/tcpCreateSocket",
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/instanceNetwork",
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/ipNameLookup",
+  "peter-jerry-ye/wasip2/internal/wasi/io/streams",
+}

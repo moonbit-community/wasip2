@@ -1,0 +1,7 @@
+import {
+  "peter-jerry-ye/wasip2/internal/wasi/io/poll" @poll,
+  "peter-jerry-ye/wasip2/internal/wasi/io/streams" @streams,
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/network" @network,
+}
+
+warnings = "-44"
