@@ -310,7 +310,7 @@ async fn test_try_get() -> Unit {
     @stdio.stdout.write("FAILED: expected None\n")
     panic()
   }
-  if not(q.try_put(42)) {
+  if !(q.try_put(42)) {
     @stdio.stdout.write("FAILED: try_put should return true\n")
     panic()
   }
@@ -322,11 +322,11 @@ async fn test_try_get() -> Unit {
     @stdio.stdout.write("FAILED: expected None after get\n")
     panic()
   }
-  if not(q.try_put(1)) {
+  if !(q.try_put(1)) {
     @stdio.stdout.write("FAILED: try_put(1) should return true\n")
     panic()
   }
-  if not(q.try_put(2)) {
+  if !(q.try_put(2)) {
     @stdio.stdout.write("FAILED: try_put(2) should return true\n")
     panic()
   }
@@ -786,7 +786,7 @@ async fn test_retry_max_retry() -> Unit {
     @stdio.stdout.write("got: " + log.to_string() + "\n")
     panic()
   }
-  if not(error_caught.val) {
+  if !(error_caught.val) {
     @stdio.stdout.write("FAILED (error should be caught)\n")
     panic()
   }
@@ -831,7 +831,7 @@ async fn test_retry_fatal_error() -> Unit {
     @stdio.stdout.write("got: " + log.to_string() + "\n")
     panic()
   }
-  if not(caught_fatal.val) {
+  if !(caught_fatal.val) {
     @stdio.stdout.write("FAILED (should catch FatalError)\n")
     panic()
   }
@@ -957,17 +957,17 @@ async fn test_http_get_example() -> Unit {
   }
   // Check that body contains expected HTML content
   let body_str = String::from_array(body.iter().map(fn(b) { b.to_int().unsafe_to_char() }).collect())
-  if not(body_str.contains("<html")) {
+  if !(body_str.contains("<html")) {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("body should contain '<html'\n")
     panic()
   }
-  if not(body_str.contains("<title>Example Domain</title>")) {
+  if !(body_str.contains("<title>Example Domain</title>")) {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("body should contain '<title>Example Domain</title>'\n")
     panic()
   }
-  if not(body_str.contains("<h1>Example Domain</h1>")) {
+  if !(body_str.contains("<h1>Example Domain</h1>")) {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("body should contain '<h1>Example Domain</h1>'\n")
     panic()
@@ -995,7 +995,7 @@ async fn test_fs_write_read_remove() -> Unit {
   }
 
   // Verify file exists
-  if not(@fs.exists(test_path)) {
+  if !(@fs.exists(test_path)) {
     @stdio.stdout.write("FAILED (file should exist after write)\n")
     panic()
   }

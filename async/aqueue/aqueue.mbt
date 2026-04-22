@@ -117,7 +117,7 @@ pub async fn[X] Queue::put(self : Queue[X], data : X) -> Unit {
   if self.closed is Some(err) {
     raise err
   }
-  if not(self.try_put(data)) {
+  if !(self.try_put(data)) {
     match self.kind {
       Unbounded => panic()
       Blocking(_) => {
