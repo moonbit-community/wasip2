@@ -1,0 +1,50 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/wasip2/http"
+
+import {
+  "peter-jerry-ye/wasip2/internal/wasi/http/types",
+}
+
+// Values
+pub async fn get(String, headers? : Map[String, String]) -> (Response, Bytes)
+
+pub async fn post(String, Bytes, headers? : Map[String, String]) -> (Response, Bytes)
+
+pub async fn put(String, Bytes, headers? : Map[String, String]) -> (Response, Bytes)
+
+pub async fn request(Method, String, headers? : Map[String, String], body? : Bytes) -> (Response, Bytes)
+
+// Errors
+pub(all) suberror HttpError {
+  RequestFailed(@types.ErrorCode)
+  InvalidResponse
+  StreamError
+}
+
+// Types and methods
+pub(all) enum Method {
+  Get
+  Head
+  Post
+  Put
+  Delete
+  Connect
+  Options
+  Trace
+  Patch
+}
+
+pub(all) struct Response {
+  status : Int
+  headers : Map[String, String]
+}
+
+pub(all) enum Scheme {
+  Http
+  Https
+}
+
+// Type aliases
+
+// Traits
+

@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "peter-jerry-ye/wasip2/internal/wasi/cli/terminalStdout"
 
-import(
-  "peter-jerry-ye/wasip2/internal/wasi/cli/terminalOutput"
-)
+import {
+  "peter-jerry-ye/wasip2/internal/wasi/cli/terminalOutput",
+}
 
 // Values
 pub fn get_terminal_stdout() -> @terminalOutput.TerminalOutput?

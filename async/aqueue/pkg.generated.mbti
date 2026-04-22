@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/wasip2/async/aqueue"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+pub suberror QueueAlreadyClosed derive(@debug.Debug)
+
+// Types and methods
+pub(all) enum Kind {
+  Unbounded
+  Blocking(Int)
+  DiscardOldest(Int)
+  DiscardLatest(Int)
+}
+
+type Queue[X]
+pub fn[X] Queue::close(Self[X], error? : Error, clear? : Bool) -> Unit
+pub async fn[X] Queue::get(Self[X]) -> X
+pub fn[X] Queue::new(kind? : Kind) -> Self[X]
+pub async fn[X] Queue::put(Self[X], X) -> Unit
+pub fn[X] Queue::try_get(Self[X]) -> X? raise
+pub fn[X] Queue::try_put(Self[X], X) -> Bool raise
+
+// Type aliases
+
+// Traits
+

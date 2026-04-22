@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "peter-jerry-ye/wasip2/internal/wasi/clocks/wallClock"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn now() -> Datetime
 
@@ -12,9 +16,7 @@ pub fn resolution() -> Datetime
 pub(all) struct Datetime {
   seconds : UInt64
   nanoseconds : UInt
-}
-pub impl Eq for Datetime
-pub impl Show for Datetime
+} derive(Eq, @debug.Debug)
 
 // Type aliases
 

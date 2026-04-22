@@ -1,9 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "peter-jerry-ye/wasip2/internal/ev"
 
-import(
-  "peter-jerry-ye/wasip2/internal/wasi/io/poll"
-)
+import {
+  "moonbitlang/core/debug",
+  "peter-jerry-ye/wasip2/internal/wasi/io/poll",
+}
 
 // Values
 pub fn async_run(async () -> Unit) -> Result[Unit, Unit]
@@ -29,8 +30,7 @@ pub async fn suspend() -> Unit raise Cancelled
 pub async fn suspend_for_pollable(@poll.Pollable) -> Unit
 
 // Errors
-pub(all) suberror Cancelled
-pub impl Show for Cancelled
+pub(all) suberror Cancelled derive(@debug.Debug)
 
 // Types and methods
 type Coroutine

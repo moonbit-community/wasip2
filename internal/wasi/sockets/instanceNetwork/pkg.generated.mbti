@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "peter-jerry-ye/wasip2/internal/wasi/sockets/instanceNetwork"
 
-import(
-  "peter-jerry-ye/wasip2/internal/wasi/sockets/network"
-)
+import {
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/network",
+}
 
 // Values
 pub fn instance_network() -> @network.Network

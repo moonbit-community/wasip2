@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "peter-jerry-ye/wasip2/gen"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub async fn async_run() -> Unit
 
@@ -9,6 +13,7 @@ pub fn mbt_ffi_cabi_realloc(Int, Int, Int, Int) -> Int
 pub fn run() -> Result[Unit, Unit]
 
 // Errors
+type FatalError derive(@debug.Debug)
 
 // Types and methods
 
