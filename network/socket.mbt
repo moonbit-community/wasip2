@@ -21,7 +21,10 @@ pub(all) suberror SocketError {
 ///|
 impl Show for SocketError with output(self, logger) {
   match self {
-    NetworkError(code) => logger.write_string("SocketError::NetworkError(\{code})")
+    NetworkError(code) =>
+      logger.write_string(
+        "SocketError::NetworkError(" + @debug.to_string(code) + ")",
+      )
     StreamError => logger.write_string("SocketError::StreamError")
   }
 }
