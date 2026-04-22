@@ -105,7 +105,7 @@ pub fn spawn(f : async () -> Unit) -> Coroutine {
     cancelled: false,
   }
   fn run(_) {
-    run_async(fn() {
+    run_async(async fn() noraise {
       coro.shielded = false
       try f() catch {
         err => coro.state = Fail(err)

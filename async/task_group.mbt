@@ -190,7 +190,7 @@ pub async fn[X] with_task_group(f : async (TaskGroup[X]) -> X) -> X {
     result: None,
     group_defer: [],
   }
-  tg.spawn_bg(fn() {
+  tg.spawn_bg(async fn() {
     let value = f(tg)
     if tg.result is None {
       tg.result = Some(value)

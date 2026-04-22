@@ -707,7 +707,7 @@ pub fn Directory::read_entries(
   let stream = unwrap_fs(self.desc.read_directory())
   defer stream.drop()
   let entries : Array[DirEntry] = []
-  for {
+  for ;; {
     let next = unwrap_fs(stream.read_directory_entry())
     match next {
       None => break

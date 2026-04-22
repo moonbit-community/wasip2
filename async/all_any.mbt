@@ -31,13 +31,13 @@ pub async fn[X] all(
   }
   let results : Array[X?] = Array::make(tasks.length(), None)
   with_task_group(
-    fn(tg) {
+    async fn(tg) {
       for i, task in tasks {
         match semaphore {
           Some(sem) => sem.acquire()
           None => ()
         }
-        tg.spawn_bg(fn() {
+        tg.spawn_bg(async fn() {
           // We rely on the assumption that the task spawned will 100% executed
           // even if it is cancelled, so that we can release the semaphore properly.
           defer {
@@ -83,13 +83,13 @@ pub async fn[X] any(
   }
   let result : Ref[Result[X, Error]?] = { val: None }
   with_task_group(
-    fn(tg) {
+    async fn(tg) {
       for task in tasks {
         match semaphore {
           Some(sem) => sem.acquire()
           None => ()
         }
-        tg.spawn_bg(fn() {
+        tg.spawn_bg(async fn() {
           // We rely on the assumption that the task spawned will 100% executed
           // even if it is cancelled, so that we can release the semaphore properly.
           defer {

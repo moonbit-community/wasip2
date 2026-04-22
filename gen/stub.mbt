@@ -51,11 +51,11 @@ async fn test_cond_var_cancellation_no_swallow() -> Unit {
   let log = StringBuilder::new()
   @async.with_task_group(root => {
     let cond = @cond_var.Cond::new()
-    let wait_task = root.spawn(allow_failure=true, fn() {
+    let wait_task = root.spawn(allow_failure=true, async fn() {
       cond.wait()
       log.write_string("waiter 1 succeed\n")
     })
-    root.spawn_bg(no_wait=true, fn() {
+    root.spawn_bg(no_wait=true, async fn() {
       cond.wait()
       log.write_string("waiter 2 succeed\n")
     })
@@ -83,13 +83,13 @@ async fn test_cond_var_fairness() -> Unit {
   let log = StringBuilder::new()
   @async.with_task_group(root => {
     let cond = @cond_var.Cond::new()
-    root.spawn_bg(fn() {
+    root.spawn_bg(async fn() {
       for _ in 0..<3 {
         cond.wait()
         log.write_string("task 1 received signal\n")
       }
     })
-    root.spawn_bg(fn() {
+    root.spawn_bg(async fn() {
       @wasip2.sleep(100)
       for _ in 0..<3 {
         cond.wait()
@@ -127,7 +127,7 @@ async fn test_cond_var_broadcast() -> Unit {
   @async.with_task_group(root => {
     let cond = @cond_var.Cond::new()
     for i in 0..<3 {
-      root.spawn_bg(fn() {
+      root.spawn_bg(async fn() {
         cond.wait()
         log.write_string("task \{i} received signal\n")
       })
@@ -156,12 +156,12 @@ async fn test_aqueue_basic() -> Unit {
   let log = StringBuilder::new()
   @async.with_task_group(fn(root) {
     let queue = @aqueue.Queue::new(kind=Unbounded)
-    root.spawn_bg(fn() {
+    root.spawn_bg(async fn() {
       for _ in 0..<6 {
         log.write_string("get => \{queue.get()}\n")
       }
     })
-    root.spawn_bg(fn() {
+    root.spawn_bg(async fn() {
       for x in 0..<6 {
         @wasip2.sleep(70)
         queue.put(x)
@@ -197,14 +197,14 @@ async fn test_aqueue_basic() -> Unit {
 async fn test_aqueue_multi_reader() -> Unit {
   @stdio.stdout.write("test aqueue multi-reader ... ")
   let log = StringBuilder::new()
-  @async.with_task_group(fn(root) {
+  @async.with_task_group(async fn(root) {
     let queue = @aqueue.Queue::new(kind=Unbounded)
-    root.spawn_bg(fn() {
+    root.spawn_bg(async fn() {
       @wasip2.sleep(70)
       let x = queue.get()
       log.write_string("task 1: get => \{x}\n")
     })
-    root.spawn_bg(fn() {
+    root.spawn_bg(async fn() {
       let x = queue.get()
       log.write_string("task 2: get => \{x}\n")
     })
@@ -231,9 +231,9 @@ async fn test_aqueue_cancellation_no_swallow() -> Unit {
   @stdio.stdout.write("test aqueue cancellation no_swallow ... ")
   let log = StringBuilder::new()
   let try_get_result : Ref[String] = { val: "" }
-  @async.with_task_group(fn(group) {
+  @async.with_task_group(async fn(group) {
     let q = @aqueue.Queue::new(kind=Unbounded)
-    let get_task = group.spawn(allow_failure=true, fn() {
+    let get_task = group.spawn(allow_failure=true, async fn() {
       log.write_string("get() => \{q.get()}\n")
     })
     @wasip2.sleep(100)
@@ -265,15 +265,15 @@ async fn test_aqueue_cancellation_no_swallow() -> Unit {
 async fn test_aqueue_fairness() -> Unit {
   @stdio.stdout.write("test aqueue fairness ... ")
   let log = StringBuilder::new()
-  @async.with_task_group(fn(root) {
+  @async.with_task_group(async fn(root) {
     let queue = @aqueue.Queue::new(kind=Unbounded)
-    root.spawn_bg(fn() {
+    root.spawn_bg(async fn() {
       for _ in 0..<2 {
         let x = queue.get()
         log.write_string("task 1: get => \{x}\n")
       }
     })
-    root.spawn_bg(fn() {
+    root.spawn_bg(async fn() {
       for _ in 0..<2 {
         let x = queue.get()
         log.write_string("task 2: get => \{x}\n")
@@ -349,12 +349,12 @@ async fn test_try_get() -> Unit {
 async fn test_with_timeout_normal_exit() -> Unit {
   @stdio.stdout.write("test with_timeout normal exit ... ")
   let log = StringBuilder::new()
-  @async.with_task_group(fn(root) {
-    root.spawn_bg(fn() {
+  @async.with_task_group(async fn(root) {
+    root.spawn_bg(async fn() {
       @wasip2.sleep(300)
       log.write_string("300ms tick\n")
     })
-    @async.with_timeout(400, fn() {
+    @async.with_timeout(400, async fn() {
       @wasip2.sleep(200)
       log.write_string("task finished after 200ms\n")
     })
@@ -379,12 +379,12 @@ async fn test_with_timeout_normal_exit() -> Unit {
 async fn test_with_timeout_timeout() -> Unit {
   @stdio.stdout.write("test with_timeout timeout ... ")
   let log = StringBuilder::new()
-  @async.with_task_group(fn(root) {
-    root.spawn_bg(fn() {
+  @async.with_task_group(async fn(root) {
+    root.spawn_bg(async fn() {
       @wasip2.sleep(300)
       log.write_string("300ms tick\n")
     })
-    @async.with_timeout(200, fn() {
+    @async.with_timeout(200, async fn() {
       @wasip2.sleep(400) catch {
         err => {
           log.write_string("task cancelled\n")
@@ -418,12 +418,12 @@ async fn test_with_timeout_opt_normal_exit() -> Unit {
   @stdio.stdout.write("test with_timeout_opt normal exit ... ")
   let log = StringBuilder::new()
   let result : Ref[String] = { val: "" }
-  @async.with_task_group(fn(root) {
-    root.spawn_bg(fn() {
+  @async.with_task_group(async fn(root) {
+    root.spawn_bg(async fn() {
       @wasip2.sleep(200)
       log.write_string("200ms tick\n")
     })
-    result.val = @async.with_timeout_opt(1000, fn() {
+    result.val = @async.with_timeout_opt(1000, async fn() {
       @wasip2.sleep(100)
       log.write_string("task finished after 100ms\n")
       42
@@ -454,12 +454,12 @@ async fn test_with_timeout_opt_timeout() -> Unit {
   @stdio.stdout.write("test with_timeout_opt timeout ... ")
   let log = StringBuilder::new()
   let result : Ref[String] = { val: "" }
-  @async.with_task_group(fn(root) {
-    root.spawn_bg(fn() {
+  @async.with_task_group(async fn(root) {
+    root.spawn_bg(async fn() {
       @wasip2.sleep(200)
       log.write_string("200ms tick\n")
     })
-    result.val = @async.with_timeout_opt(100, fn() {
+    result.val = @async.with_timeout_opt(100, async fn() {
       try @wasip2.sleep(2000) catch {
         err => {
           log.write_string("task cancelled\n")
@@ -506,7 +506,7 @@ async fn test_all_basic() -> Unit {
         @wasip2.sleep(50)
         2
       },
-      async fn() { 3 },
+      fn() { 3 },
     ][:],
   )
   if results.to_string() != "[1, 2, 3]" {
@@ -534,7 +534,7 @@ async fn test_all_preserves_order() -> Unit {
         log.write_string("task 1\n")
         1
       },
-      async fn() {
+      fn() {
         log.write_string("task 2\n")
         2
       },
@@ -636,7 +636,7 @@ async fn test_retry_immediate() -> Unit {
   @stdio.stdout.write("test retry immediate ... ")
   let log = StringBuilder::new()
   let counter : Ref[Int] = { val: 0 }
-  @async.retry(@async.Immediate, fn() {
+  @async.retry(@async.Immediate, fn() raise {
     counter.val += 1
     log.write_string("attempt \{counter.val}\n")
     if counter.val < 3 {
@@ -663,14 +663,14 @@ async fn test_retry_fixed() -> Unit {
   @stdio.stdout.write("test retry fixed delay ... ")
   let log = StringBuilder::new()
   let counter : Ref[Int] = { val: 0 }
-  @async.with_task_group(fn(root) {
-    root.spawn_bg(fn() {
+  @async.with_task_group(async fn(root) {
+    root.spawn_bg(async fn() {
       for i in 0..<4 {
         @wasip2.sleep(120)
         log.write_string("tick \{i}\n")
       }
     })
-    @async.retry(@async.FixedDelay(200), fn() {
+    @async.retry(@async.FixedDelay(200), fn() raise {
       counter.val += 1
       log.write_string("attempt \{counter.val}\n")
       if counter.val < 3 {
@@ -710,8 +710,8 @@ async fn test_retry_exponential() -> Unit {
   @stdio.stdout.write("test retry exponential delay ... ")
   let log = StringBuilder::new()
   let counter : Ref[Int] = { val: 0 }
-  @async.with_task_group(fn(root) {
-    root.spawn_bg(fn() {
+  @async.with_task_group(async fn(root) {
+    root.spawn_bg(async fn() {
       for i in 0..<6 {
         @wasip2.sleep(120)
         log.write_string("tick \{i}\n")
@@ -719,7 +719,7 @@ async fn test_retry_exponential() -> Unit {
     })
     @async.retry(
       @async.ExponentialDelay(initial=150, factor=2.0, maximum=400),
-      fn() {
+      fn() raise {
         counter.val += 1
         log.write_string("attempt \{counter.val}\n")
         if counter.val < 3 {
@@ -766,7 +766,7 @@ async fn test_retry_max_retry() -> Unit {
   let counter : Ref[Int] = { val: 0 }
   let error_caught : Ref[Bool] = { val: false }
   try {
-    @async.retry(@async.Immediate, max_retry=2, fn() {
+    @async.retry(@async.Immediate, max_retry=2, fn() raise {
       counter.val += 1
       log.write_string("attempt \{counter.val}\n")
       fail("always fail")
@@ -806,7 +806,7 @@ async fn test_retry_fatal_error() -> Unit {
     @async.retry(
       @async.Immediate,
       fatal_error=fn(err) { err is FatalError },
-      fn() {
+      fn() raise {
         counter.val += 1
         log.write_string("attempt \{counter.val}\n")
         if counter.val >= 3 {
@@ -842,7 +842,7 @@ async fn test_retry_fatal_error() -> Unit {
 async fn test_lazy_init_basic() -> Unit {
   @stdio.stdout.write("test lazy_init basic ... ")
   let log = StringBuilder::new()
-  let lazy_val = @async.lazy_init(fn() {
+  let lazy_val = @async.lazy_init(async fn() {
     log.write_string("computing\n")
     @wasip2.sleep(100)
     42
@@ -906,23 +906,23 @@ async fn test_lazy_init_cached() -> Unit {
 async fn test_lazy_init_multiple_waiters() -> Unit {
   @stdio.stdout.write("test lazy_init multiple waiters ... ")
   let log = StringBuilder::new()
-  let lazy_val = @async.lazy_init(fn() {
+  let lazy_val = @async.lazy_init(async fn() {
     log.write_string("start computing\n")
     @wasip2.sleep(200)
     log.write_string("done computing\n")
     42
   })
   @async.with_task_group(fn(root) {
-    root.spawn_bg(fn() {
+    root.spawn_bg(async fn() {
       let r = lazy_val.wait()
       log.write_string("waiter 1: \{r}\n")
     })
-    root.spawn_bg(fn() {
+    root.spawn_bg(async fn() {
       @wasip2.sleep(50)
       let r = lazy_val.wait()
       log.write_string("waiter 2: \{r}\n")
     })
-    root.spawn_bg(fn() {
+    root.spawn_bg(async fn() {
       @wasip2.sleep(100)
       let r = lazy_val.wait()
       log.write_string("waiter 3: \{r}\n")

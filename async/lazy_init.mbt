@@ -54,7 +54,7 @@ pub async fn[X] Lazy::wait(self : Lazy[X]) -> X {
     Fail(err) => raise err
     Running(_) => ()
     Uninitialized => {
-      let coro = @ev.spawn(fn() {
+      let coro = @ev.spawn(async fn() {
         try (self.worker)() catch {
           err =>
             if err is @ev.Cancelled && @ev.is_being_cancelled() {

@@ -31,8 +31,8 @@ pub async fn[X] with_timeout(
   f : async () -> X,
   error~ : Error = TimeoutError,
 ) -> X {
-  with_task_group(fn(group) {
-    group.spawn_bg(no_wait=true, fn() {
+  with_task_group(async fn(group) {
+    group.spawn_bg(no_wait=true, async fn() {
       @wasip2.sleep(time)
       raise error
     })
@@ -51,8 +51,8 @@ pub async fn[X] with_timeout(
 /// - If `f` is still running after `timeout` milliseconds,
 /// ` with_timeout_opt` will return `None` immediately, and `f` will be cancelled.
 pub async fn[X] with_timeout_opt(time : Int, f : async () -> X) -> X? {
-  with_task_group(fn(group) {
-    group.spawn_bg(no_wait=true, fn() {
+  with_task_group(async fn(group) {
+    group.spawn_bg(no_wait=true, async fn() {
       @wasip2.sleep(time)
       group.return_immediately(None)
     })
