@@ -69,7 +69,7 @@ impl Reader with drop(self, len) {
         return dropped
       }
       continue dropped + buf.len
-    } else {
+    } nobreak {
       buf.start = buf.len - (dropped - len)
       buf.len = dropped - len
       len
@@ -166,12 +166,12 @@ impl Reader with read_all(self) {
 /// The segment of input from start of reader to start of `sep` or EOF is returned.
 /// `sep` will be conusmed from the input, but is not included in the return value.
 impl Reader with read_until(self, sep) {
-  let sep = @encoding/utf8.encode(sep)
+  let sep = @utf8.encode(sep)
   let buf = self._get_internal_buffer()
   match buf.find_opt(sep, reader=self) {
     None if buf.len > 0 => {
       let buf_bytes = buf.buf.unsafe_reinterpret_as_bytes()
-      let remaining = @encoding/utf8.decode(
+      let remaining = @utf8.decode(
         buf_bytes[buf.start:buf.start + buf.len],
       )
       buf.0.drop(buf.len)
@@ -180,7 +180,7 @@ impl Reader with read_until(self, sep) {
     None => None
     Some(index) => {
       let buf_bytes = buf.buf.unsafe_reinterpret_as_bytes()
-      let result = @encoding/utf8.decode(buf_bytes[buf.start:buf.start + index])
+      let result = @utf8.decode(buf_bytes[buf.start:buf.start + index])
       buf.0.drop(index + sep.length())
       Some(result)
     }
