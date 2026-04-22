@@ -42,7 +42,7 @@ struct TaskGroup[X] {
 
 ///|
 #deprecated("this error is no longer emitted")
-pub suberror AlreadyTerminated derive(Show)
+pub suberror AlreadyTerminated derive(Debug)
 
 ///|
 fn[X] TaskGroup::spawn_coroutine(

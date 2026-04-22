@@ -10,7 +10,7 @@ pub(all) enum DescriptorType {
   SYMBOLIC_LINK
   REGULAR_FILE
   SOCKET
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn DescriptorType::ordinal(self : DescriptorType) -> Int {
@@ -42,7 +42,7 @@ pub fn DescriptorType::from(self : Int) -> DescriptorType {
 }
 
 ///|
-pub(all) struct DescriptorFlags(Byte) derive(Show, Eq)
+pub(all) struct DescriptorFlags(Byte) derive(Debug, Eq)
 
 ///|
 pub fn DescriptorFlags::default() -> DescriptorFlags {
@@ -99,7 +99,7 @@ pub fn DescriptorFlags::is_set(
 }
 
 ///|
-pub(all) struct PathFlags(Byte) derive(Show, Eq)
+pub(all) struct PathFlags(Byte) derive(Debug, Eq)
 
 ///|
 pub fn PathFlags::default() -> PathFlags {
@@ -137,7 +137,7 @@ pub fn PathFlags::is_set(self : Self, other : PathFlagsFlag) -> Bool {
 }
 
 ///|
-pub(all) struct OpenFlags(Byte) derive(Show, Eq)
+pub(all) struct OpenFlags(Byte) derive(Debug, Eq)
 
 ///|
 pub fn OpenFlags::default() -> OpenFlags {
@@ -188,20 +188,20 @@ pub(all) struct DescriptorStat {
   data_access_timestamp : @wallClock.Datetime?
   data_modification_timestamp : @wallClock.Datetime?
   status_change_timestamp : @wallClock.Datetime?
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub(all) enum NewTimestamp {
   NoChange
   Now
   Timestamp(@wallClock.Datetime)
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub(all) struct DirectoryEntry {
   type_ : DescriptorType
   name : String
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub(all) suberror ErrorCode {
@@ -242,7 +242,7 @@ pub(all) suberror ErrorCode {
   INVALID_SEEK
   TEXT_FILE_BUSY
   CROSS_DEVICE
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn ErrorCode::ordinal(self : ErrorCode) -> Int {
@@ -339,7 +339,7 @@ pub(all) enum Advice {
   WILL_NEED
   DONT_NEED
   NO_REUSE
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn Advice::ordinal(self : Advice) -> Int {
@@ -370,10 +370,10 @@ pub fn Advice::from(self : Int) -> Advice {
 pub(all) struct MetadataHashValue {
   lower : UInt64
   upper : UInt64
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
-pub(all) struct Descriptor(Int) derive(Show, Eq)
+pub(all) struct Descriptor(Int) derive(Debug, Eq)
 
 ///|
 /// Drops a resource handle.
@@ -383,7 +383,7 @@ pub fn Descriptor::drop(self : Descriptor) -> Unit {
 }
 
 ///|
-pub(all) struct DirectoryEntryStream(Int) derive(Show, Eq)
+pub(all) struct DirectoryEntryStream(Int) derive(Debug, Eq)
 
 ///|
 /// Drops a resource handle.

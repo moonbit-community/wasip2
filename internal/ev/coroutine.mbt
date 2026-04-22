@@ -53,7 +53,7 @@ pub fn is_being_cancelled() -> Bool {
 }
 
 ///|
-pub(all) suberror Cancelled derive(Show)
+pub(all) suberror Cancelled derive(Debug)
 
 ///|
 pub fn Coroutine::cancel(self : Coroutine) -> Unit {

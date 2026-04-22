@@ -794,7 +794,7 @@ async fn test_retry_max_retry() -> Unit {
 }
 
 ///|
-suberror FatalError derive(Show)
+suberror FatalError derive(Debug)
 
 ///|
 async fn test_retry_fatal_error() -> Unit {

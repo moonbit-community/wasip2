@@ -13,7 +13,7 @@
 // limitations under the License.
 
 ///|
-pub suberror TimeoutError derive(Show)
+pub suberror TimeoutError derive(Debug)
 
 ///|
 /// `with_timeout(timeout, f)` run the async function `f`.

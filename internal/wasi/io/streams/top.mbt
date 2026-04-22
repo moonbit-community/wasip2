@@ -4,10 +4,10 @@
 pub(all) suberror StreamError {
   LastOperationFailed(@error.Error_)
   Closed
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
-pub(all) struct InputStream(Int) derive(Show, Eq)
+pub(all) struct InputStream(Int) derive(Debug, Eq)
 
 ///|
 /// Drops a resource handle.
@@ -17,7 +17,7 @@ pub fn InputStream::drop(self : InputStream) -> Unit {
 }
 
 ///|
-pub(all) struct OutputStream(Int) derive(Show, Eq)
+pub(all) struct OutputStream(Int) derive(Debug, Eq)
 
 ///|
 /// Drops a resource handle.
