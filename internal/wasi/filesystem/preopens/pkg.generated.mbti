@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "peter-jerry-ye/wasip2/internal/wasi/filesystem/preopens"
 
-import(
-  "peter-jerry-ye/wasip2/internal/wasi/filesystem/types"
-)
+import {
+  "peter-jerry-ye/wasip2/internal/wasi/filesystem/types",
+}
 
 // Values
 pub fn get_directories() -> Array[(@types.Descriptor, String)]

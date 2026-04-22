@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "peter-jerry-ye/wasip2/internal/wasi/http/outgoingHandler"
 
-import(
-  "peter-jerry-ye/wasip2/internal/wasi/http/types"
-)
+import {
+  "peter-jerry-ye/wasip2/internal/wasi/http/types",
+}
 
 // Values
 pub fn handle(@types.OutgoingRequest, @types.RequestOptions?) -> Result[@types.FutureIncomingResponse, @types.ErrorCode]

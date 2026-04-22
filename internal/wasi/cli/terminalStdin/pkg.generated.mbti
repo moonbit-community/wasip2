@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "peter-jerry-ye/wasip2/internal/wasi/cli/terminalStdin"
 
-import(
-  "peter-jerry-ye/wasip2/internal/wasi/cli/terminalInput"
-)
+import {
+  "peter-jerry-ye/wasip2/internal/wasi/cli/terminalInput",
+}
 
 // Values
 pub fn get_terminal_stdin() -> @terminalInput.TerminalInput?

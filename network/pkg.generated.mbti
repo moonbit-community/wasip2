@@ -1,0 +1,49 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "peter-jerry-ye/wasip2/network"
+
+// Values
+pub fn parse_ipv4(String) -> Ipv4Addr?
+
+pub async fn resolve(String) -> Array[IpAddr]
+
+pub async fn tcp_connect(SocketAddr) -> TcpStream
+
+// Errors
+pub(all) suberror SocketError {
+  NetworkError(@peter-jerry-ye/wasip2/internal/wasi/sockets/network.ErrorCode)
+  StreamError
+}
+
+// Types and methods
+pub(all) enum IpAddr {
+  V4(Ipv4Addr)
+  V6(Ipv6Addr)
+}
+
+pub(all) struct Ipv4Addr {
+  a : Byte
+  b : Byte
+  c : Byte
+  d : Byte
+}
+
+pub(all) struct Ipv6Addr {
+  segments : (UInt, UInt, UInt, UInt, UInt, UInt, UInt, UInt)
+}
+
+pub(all) struct SocketAddr {
+  ip : IpAddr
+  port : UInt
+}
+
+pub(all) struct TcpStream {
+  // private fields
+}
+pub fn TcpStream::close(Self) -> Unit
+pub async fn TcpStream::read(Self, Int) -> Bytes
+pub async fn TcpStream::write(Self, Bytes) -> Int
+
+// Type aliases
+
+// Traits
+

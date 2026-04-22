@@ -1,10 +1,11 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "peter-jerry-ye/wasip2/fs"
 
-import(
-  "peter-jerry-ye/wasip2/async/io"
-  "peter-jerry-ye/wasip2/internal/wasi/filesystem/types"
-)
+import {
+  "moonbitlang/core/debug",
+  "peter-jerry-ye/wasip2/async/io",
+  "peter-jerry-ye/wasip2/internal/wasi/filesystem/types",
+}
 
 // Values
 pub fn atime(StringView, follow_symlink? : Bool) -> (Int64, Int) raise FsError
@@ -17,7 +18,7 @@ pub fn can_write(StringView) -> Bool
 
 pub fn chmod(StringView, Int) -> Unit raise FsError
 
-pub fn create(StringView, permission~ : Int, sync? : SyncMode) -> File raise FsError
+pub fn create(StringView, sync? : SyncMode) -> File raise FsError
 
 pub fn ctime(StringView, follow_symlink? : Bool) -> (Int64, Int) raise FsError
 
@@ -29,7 +30,7 @@ pub fn mkdir(StringView, permission~ : Int) -> Unit raise FsError
 
 pub fn mtime(StringView, follow_symlink? : Bool) -> (Int64, Int) raise FsError
 
-pub fn open(StringView, mode~ : Mode, sync? : SyncMode, append? : Bool, create? : Int, truncate? : Bool) -> File raise FsError
+pub fn open(StringView, mode? : Mode, sync? : SyncMode, append? : Bool, create? : Bool, truncate? : Bool) -> File raise FsError
 
 pub fn opendir(StringView) -> Directory raise FsError
 
@@ -37,7 +38,7 @@ pub fn preopens() -> Array[Preopen]
 
 pub fn read_dir_entries(StringView, include_hidden? : Bool, include_special? : Bool) -> Array[DirEntry] raise FsError
 
-pub async fn read_file(StringView, sync_timestamp? : Bool) -> &@io.Data
+pub async fn read_file(StringView) -> &@io.Data
 
 #deprecated
 pub async fn read_text_file(StringView, encoding? : @io.Encoding) -> String
@@ -56,10 +57,10 @@ pub fn symlink(target~ : StringView, StringView) -> Unit raise FsError
 
 pub async fn walk(StringView, async (String, Array[String]) -> Unit, max_concurrency? : Int, allow_failure? : Bool) -> Unit
 
-pub async fn write_file(StringView, &@io.Data, sync? : SyncMode, append? : Bool, create? : Int, truncate? : Bool) -> Unit
+pub async fn write_file(StringView, &@io.Data, sync? : SyncMode, append? : Bool, create? : Bool, truncate? : Bool) -> Unit
 
 #deprecated
-pub async fn write_text_file(StringView, String, encoding? : @io.Encoding, sync? : SyncMode, append? : Bool, create? : Int, truncate? : Bool) -> Unit
+pub async fn write_text_file(StringView, String, encoding? : @io.Encoding, sync? : SyncMode, append? : Bool, create? : Bool, truncate? : Bool) -> Unit
 
 // Errors
 pub(all) suberror FsError {
@@ -72,17 +73,13 @@ pub(all) suberror FsError {
   Unsupported
   UnexpectedEof
   Wasi(@types.ErrorCode)
-}
-pub impl Eq for FsError
-pub impl Show for FsError
+} derive(Eq, @debug.Debug)
 
 // Types and methods
 pub(all) struct DirEntry {
   name : String
   kind : FileKind
-}
-pub impl Eq for DirEntry
-pub impl Show for DirEntry
+} derive(Eq, @debug.Debug)
 
 type Directory
 pub fn Directory::close(Self) -> Unit
@@ -113,17 +110,13 @@ pub(all) enum FileKind {
   Pipe
   BlockDevice
   CharDevice
-}
-pub impl Eq for FileKind
-pub impl Show for FileKind
+} derive(Eq, @debug.Debug)
 
 pub(all) enum Mode {
   ReadOnly
   WriteOnly
   ReadWrite
-}
-pub impl Eq for Mode
-pub impl Show for Mode
+} derive(Eq, @debug.Debug)
 
 pub(all) struct Preopen {
   dir : Directory
@@ -137,24 +130,18 @@ pub(all) struct Stat {
   atime : Timestamp?
   mtime : Timestamp?
   ctime : Timestamp?
-}
-pub impl Eq for Stat
-pub impl Show for Stat
+} derive(Eq, @debug.Debug)
 
 pub(all) enum SyncMode {
   NoSync
   Data
   Full
-}
-pub impl Eq for SyncMode
-pub impl Show for SyncMode
+} derive(Eq, @debug.Debug)
 
 pub(all) struct Timestamp {
   seconds : Int64
   nanoseconds : Int
-}
-pub impl Eq for Timestamp
-pub impl Show for Timestamp
+} derive(Eq, @debug.Debug)
 
 // Type aliases
 
