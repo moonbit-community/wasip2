@@ -1,5 +1,6 @@
 {
   "import": [
+    "moonbitlang/core/cmp",
     "peter-jerry-ye/wasip2/async/io",
     "peter-jerry-ye/wasip2/async/semaphore",
     {
