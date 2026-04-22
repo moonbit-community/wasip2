@@ -715,10 +715,10 @@ pub fn Directory::read_entries(
         let name = entry.name
         let is_special = name == "." || name == ".."
         let is_hidden = name.has_prefix(".")
-        if not(include_special) && is_special {
+        if !(include_special) && is_special {
           continue
         }
-        if not(include_hidden) && is_hidden && not(is_special) {
+        if !(include_hidden) && is_hidden && !(is_special) {
           continue
         }
         entries.push({ name, kind: to_file_kind(entry.type_) })
@@ -896,7 +896,7 @@ pub impl @io.Writer for File with write_once(self, buf, offset~, len~) {
   self.write_at(view, position~) catch {
     _ => return 0
   }
-  if not(self.append) {
+  if !(self.append) {
     self.write_pos += len.to_uint64()
   }
   len
