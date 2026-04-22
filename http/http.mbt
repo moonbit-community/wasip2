@@ -70,7 +70,10 @@ pub(all) suberror HttpError {
 ///|
 impl Show for HttpError with output(self, logger) {
   match self {
-    RequestFailed(code) => logger.write_string("HttpError::RequestFailed(\{code})")
+    RequestFailed(code) =>
+      logger.write_string(
+        "HttpError::RequestFailed(" + @debug.to_string(code) + ")",
+      )
     InvalidResponse => logger.write_string("HttpError::InvalidResponse")
     StreamError => logger.write_string("HttpError::StreamError")
   }
