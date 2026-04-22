@@ -65,7 +65,7 @@ struct Queue[X] {
 /// Create an empty queue.
 /// The behavior of `put` is determined by the `kind` argument,
 /// see the type `Kind` for more details.
-pub fn[X] Queue::new(kind~ : Kind = Unbounded) -> Queue[X] {
+pub fn[X] Queue::new(kind? : Kind = Unbounded) -> Queue[X] {
   match kind {
     Unbounded => ()
     Blocking(n) | DiscardOldest(n) | DiscardLatest(n) =>
@@ -117,7 +117,7 @@ pub async fn[X] Queue::put(self : Queue[X], data : X) -> Unit {
   if self.closed is Some(err) {
     raise err
   }
-  if !(self.try_put(data)) {
+  if !self.try_put(data) {
     match self.kind {
       Unbounded => panic()
       Blocking(_) => {
@@ -165,18 +165,18 @@ pub fn[X] Queue::try_put(self : Queue[X], data : X) -> Bool raise {
     match reader {
       None =>
         break match self.kind {
-        Unbounded => {
-          self.buffer.push_back(data)
-          true
-        }
-        Blocking(n) | DiscardOldest(n) | DiscardLatest(n) =>
-          if self.buffer.length() < n {
+          Unbounded => {
             self.buffer.push_back(data)
             true
-          } else {
-            false
           }
-      }
+          Blocking(n) | DiscardOldest(n) | DiscardLatest(n) =>
+            if self.buffer.length() < n {
+              self.buffer.push_back(data)
+              true
+            } else {
+              false
+            }
+        }
       Some({ coro: None, .. }) => continue self.readers.pop_front()
       Some({ coro: Some(coro), .. } as reader) => {
         // after waking the reader, it may not start execution immediately.
@@ -209,10 +209,7 @@ pub async fn[X] Queue::get(self : Queue[X]) -> X {
   if self.try_get() is Some(data) {
     return data
   }
-  let reader = Reader::{
-    value: None,
-    coro: Some(@ev.current_coroutine()),
-  }
+  let reader = Reader::{ value: None, coro: Some(@ev.current_coroutine()) }
   self.readers.push_back(reader)
   @ev.suspend() catch {
     _ if reader.value is Some(value) =>
@@ -287,8 +284,8 @@ pub suberror QueueAlreadyClosed derive(Debug)
 /// But this error can be customized via the `error` parameter.
 pub fn[X] Queue::close(
   self : Queue[X],
-  error~ : Error = QueueAlreadyClosed,
-  clear~ : Bool = false,
+  error? : Error = QueueAlreadyClosed,
+  clear? : Bool = false,
 ) -> Unit {
   self.closed = Some(error)
   for writer in self.writers {

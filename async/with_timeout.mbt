@@ -29,7 +29,7 @@ pub suberror TimeoutError derive(Debug)
 pub async fn[X] with_timeout(
   time : Int,
   f : async () -> X,
-  error~ : Error = TimeoutError,
+  error? : Error = TimeoutError,
 ) -> X {
   with_task_group(async fn(group) {
     group.spawn_bg(no_wait=true, async fn() {

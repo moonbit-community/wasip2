@@ -171,9 +171,7 @@ impl Reader with read_until(self, sep) {
   match buf.find_opt(sep, reader=self) {
     None if buf.len > 0 => {
       let buf_bytes = buf.buf.unsafe_reinterpret_as_bytes()
-      let remaining = @utf8.decode(
-        buf_bytes[buf.start:buf.start + buf.len],
-      )
+      let remaining = @utf8.decode(buf_bytes[buf.start:buf.start + buf.len])
       buf.0.drop(buf.len)
       Some(remaining)
     }

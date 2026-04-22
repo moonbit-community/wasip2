@@ -61,16 +61,18 @@ pub(all) struct SocketAddr {
 ///|
 fn SocketAddr::to_wasi(self : SocketAddr) -> @wasiNetwork.IpSocketAddress {
   match self.ip {
-    V4(addr) => @wasiNetwork.IpSocketAddress::Ipv4({
-      port: self.port,
-      address: (addr.a, addr.b, addr.c, addr.d),
-    })
-    V6(addr) => @wasiNetwork.IpSocketAddress::Ipv6({
-      port: self.port,
-      flow_info: 0U,
-      address: addr.segments,
-      scope_id: 0U,
-    })
+    V4(addr) =>
+      @wasiNetwork.IpSocketAddress::Ipv4({
+        port: self.port,
+        address: (addr.a, addr.b, addr.c, addr.d),
+      })
+    V6(addr) =>
+      @wasiNetwork.IpSocketAddress::Ipv6({
+        port: self.port,
+        flow_info: 0U,
+        address: addr.segments,
+        scope_id: 0U,
+      })
   }
 }
 
@@ -190,7 +192,7 @@ pub async fn resolve(hostname : String) -> Array[IpAddr] {
       Ok(Some(addr)) => {
         let ip_addr = match addr {
           Ipv4((a, b, c, d)) => IpAddr::V4(Ipv4Addr::{ a, b, c, d })
-          Ipv6(segments) => IpAddr::V6(Ipv6Addr::{ segments })
+          Ipv6(segments) => IpAddr::V6(Ipv6Addr::{ segments, })
         }
         addresses.push(ip_addr)
       }

@@ -30,28 +30,24 @@ pub async fn[X] all(
     None => None
   }
   let results : Array[X?] = Array::make(tasks.length(), None)
-  with_task_group(
-    async fn(tg) {
-      for i, task in tasks {
-        match semaphore {
-          Some(sem) => sem.acquire()
-          None => ()
-        }
-        tg.spawn_bg(async fn() {
-          // We rely on the assumption that the task spawned will 100% executed
-          // even if it is cancelled, so that we can release the semaphore properly.
-          defer {
-            match semaphore {
-              Some(sem) => sem.release()
-              None => ()
-            }
-          }
-          let result = task()
-          results[i] = Some(result)
-        })
+  with_task_group(async fn(tg) {
+    for i, task in tasks {
+      match semaphore {
+        Some(sem) => sem.acquire()
+        None => ()
       }
-    },
-  )
+      tg.spawn_bg(async fn() {
+        // We rely on the assumption that the task spawned will 100% executed
+        // even if it is cancelled, so that we can release the semaphore properly.
+        defer (match semaphore {
+          Some(sem) => sem.release()
+          None => ()
+        })
+        let result = task()
+        results[i] = Some(result)
+      })
+    }
+  })
   results.map(fn(r) { r.unwrap() })
 }
 
@@ -72,7 +68,7 @@ pub async fn[X] all(
 pub async fn[X] any(
   tasks : ArrayView[async () -> X],
   max_concurrent? : Int,
-  allow_failure~ : Bool = false,
+  allow_failure? : Bool = false,
 ) -> X {
   let semaphore = match max_concurrent {
     Some(p) => Some(@semaphore.Semaphore::new(p))
@@ -82,41 +78,37 @@ pub async fn[X] any(
     fail("no tasks provided to any()")
   }
   let result : Ref[Result[X, Error]?] = { val: None }
-  with_task_group(
-    async fn(tg) {
-      for task in tasks {
-        match semaphore {
-          Some(sem) => sem.acquire()
-          None => ()
-        }
-        tg.spawn_bg(async fn() {
-          // We rely on the assumption that the task spawned will 100% executed
-          // even if it is cancelled, so that we can release the semaphore properly.
-          defer {
-            match semaphore {
-              Some(sem) => sem.release()
-              None => ()
-            }
-          }
-          try {
-            let value = task()
-            result.val = Some(Ok(value))
-            tg.return_immediately(())
-          } catch {
-            e =>
-              if allow_failure {
-                match result.val {
-                  None | Some(Err(_)) => result.val = Some(Err(e))
-                  Some(Ok(_)) => ()
-                }
-              } else {
-                raise e
-              }
-          }
-        })
+  with_task_group(async fn(tg) {
+    for task in tasks {
+      match semaphore {
+        Some(sem) => sem.acquire()
+        None => ()
       }
-    },
-  )
+      tg.spawn_bg(async fn() {
+        // We rely on the assumption that the task spawned will 100% executed
+        // even if it is cancelled, so that we can release the semaphore properly.
+        defer (match semaphore {
+          Some(sem) => sem.release()
+          None => ()
+        })
+        try {
+          let value = task()
+          result.val = Some(Ok(value))
+          tg.return_immediately(())
+        } catch {
+          e =>
+            if allow_failure {
+              match result.val {
+                None | Some(Err(_)) => result.val = Some(Err(e))
+                Some(Ok(_)) => ()
+              }
+            } else {
+              raise e
+            }
+        }
+      })
+    }
+  })
   match result.val {
     Some(Ok(value)) => value
     Some(Err(e)) => raise e
