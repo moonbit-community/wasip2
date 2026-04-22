@@ -23,13 +23,13 @@ pub(all) suberror FsError {
   Unsupported
   UnexpectedEof
   Wasi(@types.ErrorCode)
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub(all) struct Timestamp {
   seconds : Int64
   nanoseconds : Int
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub(all) struct Stat {
@@ -39,7 +39,7 @@ pub(all) struct Stat {
   atime : Timestamp?
   mtime : Timestamp?
   ctime : Timestamp?
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub(all) enum FileKind {
@@ -51,21 +51,21 @@ pub(all) enum FileKind {
   Pipe
   BlockDevice
   CharDevice
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub(all) enum Mode {
   ReadOnly
   WriteOnly
   ReadWrite
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub(all) enum SyncMode {
   NoSync
   Data
   Full
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 struct File {
@@ -85,7 +85,7 @@ struct Directory {
 pub(all) struct DirEntry {
   name : String
   kind : FileKind
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub(all) struct Preopen {

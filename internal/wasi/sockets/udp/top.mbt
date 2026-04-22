@@ -4,16 +4,16 @@
 pub(all) struct IncomingDatagram {
   data : FixedArray[Byte]
   remote_address : @network.IpSocketAddress
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub(all) struct OutgoingDatagram {
   data : FixedArray[Byte]
   remote_address : @network.IpSocketAddress?
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
-pub(all) struct UdpSocket(Int) derive(Show, Eq)
+pub(all) struct UdpSocket(Int) derive(Debug, Eq)
 
 ///|
 /// Drops a resource handle.
@@ -23,7 +23,7 @@ pub fn UdpSocket::drop(self : UdpSocket) -> Unit {
 }
 
 ///|
-pub(all) struct IncomingDatagramStream(Int) derive(Show, Eq)
+pub(all) struct IncomingDatagramStream(Int) derive(Debug, Eq)
 
 ///|
 /// Drops a resource handle.
@@ -33,7 +33,7 @@ pub fn IncomingDatagramStream::drop(self : IncomingDatagramStream) -> Unit {
 }
 
 ///|
-pub(all) struct OutgoingDatagramStream(Int) derive(Show, Eq)
+pub(all) struct OutgoingDatagramStream(Int) derive(Debug, Eq)
 
 ///|
 /// Drops a resource handle.

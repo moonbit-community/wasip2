@@ -5,7 +5,7 @@ pub(all) enum ShutdownType {
   RECEIVE
   SEND
   BOTH
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn ShutdownType::ordinal(self : ShutdownType) -> Int {
@@ -27,7 +27,7 @@ pub fn ShutdownType::from(self : Int) -> ShutdownType {
 }
 
 ///|
-pub(all) struct TcpSocket(Int) derive(Show, Eq)
+pub(all) struct TcpSocket(Int) derive(Debug, Eq)
 
 ///|
 /// Drops a resource handle.

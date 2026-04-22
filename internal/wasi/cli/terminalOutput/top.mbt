@@ -2,7 +2,7 @@
 
 ///|
 /// The output side of a terminal.
-pub(all) struct TerminalOutput(Int) derive(Show, Eq)
+pub(all) struct TerminalOutput(Int) derive(Debug, Eq)
 
 ///|
 /// Drops a resource handle.

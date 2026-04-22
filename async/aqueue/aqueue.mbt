@@ -263,7 +263,7 @@ pub fn[X] Queue::try_get(self : Queue[X]) -> X? raise {
 }
 
 ///|
-pub suberror QueueAlreadyClosed derive(Show)
+pub suberror QueueAlreadyClosed derive(Debug)
 
 ///|
 /// Close an async queue. After the queue is closed:
