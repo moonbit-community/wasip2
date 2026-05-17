@@ -235,7 +235,7 @@ async fn test_aqueue_cancellation_no_swallow() -> Unit {
     q.put(42)
     get_task.cancel()
     @wasip2.sleep(100)
-    try_get_result.val = q.try_get().to_string()
+    try_get_result.val = show_int_option(q.try_get())
   })
   let expected_log =
     #|get() => 42
@@ -296,10 +296,18 @@ async fn test_aqueue_fairness() -> Unit {
 }
 
 ///|
+fn show_int_option(value : Int?) -> String {
+  match value {
+    None => "None"
+    Some(value) => "Some(\{value})"
+  }
+}
+
+///|
 async fn test_try_get() -> Unit {
   @stdio.stdout.write("test try_get ... ")
   let q : @aqueue.Queue[Int] = @aqueue.Queue::new(kind=Unbounded)
-  if q.try_get().to_string() != "None" {
+  if q.try_get() != None {
     @stdio.stdout.write("FAILED: expected None\n")
     panic()
   }
@@ -307,11 +315,11 @@ async fn test_try_get() -> Unit {
     @stdio.stdout.write("FAILED: try_put should return true\n")
     panic()
   }
-  if q.try_get().to_string() != "Some(42)" {
+  if q.try_get() != Some(42) {
     @stdio.stdout.write("FAILED: expected Some(42)\n")
     panic()
   }
-  if q.try_get().to_string() != "None" {
+  if q.try_get() != None {
     @stdio.stdout.write("FAILED: expected None after get\n")
     panic()
   }
@@ -323,15 +331,15 @@ async fn test_try_get() -> Unit {
     @stdio.stdout.write("FAILED: try_put(2) should return true\n")
     panic()
   }
-  if q.try_get().to_string() != "Some(1)" {
+  if q.try_get() != Some(1) {
     @stdio.stdout.write("FAILED: expected Some(1)\n")
     panic()
   }
-  if q.try_get().to_string() != "Some(2)" {
+  if q.try_get() != Some(2) {
     @stdio.stdout.write("FAILED: expected Some(2)\n")
     panic()
   }
-  if q.try_get().to_string() != "None" {
+  if q.try_get() != None {
     @stdio.stdout.write("FAILED: expected None at end\n")
     panic()
   }
@@ -414,11 +422,13 @@ async fn test_with_timeout_opt_normal_exit() -> Unit {
       @wasip2.sleep(200)
       log.write_string("200ms tick\n")
     })
-    result.val = @async.with_timeout_opt(1000, async fn() {
-      @wasip2.sleep(100)
-      log.write_string("task finished after 100ms\n")
-      42
-    }).to_string()
+    result.val = show_int_option(
+      @async.with_timeout_opt(1000, async fn() {
+        @wasip2.sleep(100)
+        log.write_string("task finished after 100ms\n")
+        42
+      }),
+    )
   })
   let expected_log =
     #|task finished after 100ms
@@ -449,19 +459,21 @@ async fn test_with_timeout_opt_timeout() -> Unit {
       @wasip2.sleep(200)
       log.write_string("200ms tick\n")
     })
-    result.val = @async.with_timeout_opt(100, async fn() {
-      try @wasip2.sleep(2000) catch {
-        err => {
-          log.write_string("task cancelled\n")
-          raise err
+    result.val = show_int_option(
+      @async.with_timeout_opt(100, async fn() {
+        try @wasip2.sleep(2000) catch {
+          err => {
+            log.write_string("task cancelled\n")
+            raise err
+          }
+        } noraise {
+          _ => {
+            log.write_string("task finished after 2s\n")
+            42
+          }
         }
-      } noraise {
-        _ => {
-          log.write_string("task finished after 2s\n")
-          42
-        }
-      }
-    }).to_string()
+      }),
+    )
   })
   let expected_log =
     #|task cancelled
@@ -498,10 +510,10 @@ async fn test_all_basic() -> Unit {
       fn() { 3 },
     ][:],
   )
-  if results.to_string() != "[1, 2, 3]" {
+  if results != [1, 2, 3] {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: [1, 2, 3]\n")
-    @stdio.stdout.write("got: " + results.to_string() + "\n")
+    @stdio.stdout.write("got: \{to_repr(results)}\n")
     panic()
   }
   @stdio.stdout.write("ok\n")
@@ -540,10 +552,10 @@ async fn test_all_preserves_order() -> Unit {
     @stdio.stdout.write("got: " + log.to_string() + "\n")
     panic()
   }
-  if results.to_string() != "[0, 1, 2]" {
+  if results != [0, 1, 2] {
     @stdio.stdout.write("FAILED (results)\n")
     @stdio.stdout.write("expected: [0, 1, 2]\n")
-    @stdio.stdout.write("got: " + results.to_string() + "\n")
+    @stdio.stdout.write("got: \{to_repr(results)}\n")
     panic()
   }
   @stdio.stdout.write("ok\n")
