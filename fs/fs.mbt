@@ -95,14 +95,14 @@ pub(all) struct Preopen {
 
 ///|
 fn normalize_path(path : StringView) -> String {
-  let raw = path.to_string()
+  let raw = path.to_owned()
   if raw == "" {
     return ""
   }
   let is_abs = raw.has_prefix("/")
   let parts : Array[String] = []
   for part_view in raw.split("/") {
-    let part = part_view.to_string()
+    let part = part_view.to_owned()
     if part == "" || part == "." {
       continue
     }
@@ -261,12 +261,12 @@ fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError 
           if normalized == "/" {
             ""
           } else {
-            view.view(start_offset=1).to_string()
+            view.view(start_offset=1).to_owned()
           }
         } else if normalized == best_root {
           ""
         } else {
-          view.view(start_offset=best_root.length() + 1).to_string()
+          view.view(start_offset=best_root.length() + 1).to_owned()
         }
         (desc, rel)
       }
@@ -284,7 +284,7 @@ fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError 
       if root == "" {
         return (desc, normalized)
       }
-      let root_rel = root[:].view(start_offset=1).to_string()
+      let root_rel = root[:].view(start_offset=1).to_owned()
       if normalized == root_rel || normalized.has_prefix(root_rel + "/") {
         if best_desc is None || root_rel.length() > best_root.length() {
           best_desc = Some(desc)
@@ -294,7 +294,7 @@ fn resolve_path(path : StringView) -> (@types.Descriptor, String) raise FsError 
           } else {
             best_rel = normalized[:]
               .view(start_offset=root_rel.length() + 1)
-              .to_string()
+              .to_owned()
           }
         }
       }
@@ -320,11 +320,11 @@ fn split_parent(path : StringView) -> (String, String) raise FsError {
   }
   match normalized.rev_find("/") {
     None => ("", normalized)
-    Some(0) => ("/", normalized[:].view(start_offset=1).to_string())
+    Some(0) => ("/", normalized[:].view(start_offset=1).to_owned())
     Some(i) =>
       (
-        normalized[:].view(end_offset=i).to_string(),
-        normalized[:].view(start_offset=i + 1).to_string(),
+        normalized[:].view(end_offset=i).to_owned(),
+        normalized[:].view(start_offset=i + 1).to_owned(),
       )
   }
 }
@@ -549,7 +549,7 @@ pub fn rmdir(
       include_special=false,
     )
     for entry in entries {
-      let child = join_path(path.to_string(), entry.name)
+      let child = join_path(path.to_owned(), entry.name)
       if entry.kind is Directory {
         rmdir(child, recursive=true)
       } else {
@@ -565,7 +565,7 @@ pub fn symlink(target~ : StringView, path : StringView) -> Unit raise FsError {
   let (parent, name) = split_parent(path)
   let (desc, rel) = resolve_path(parent)
   let prefix = if rel == "" { name } else { rel + "/" + name }
-  unwrap_fs(desc.symlink_at(target.to_string(), prefix))
+  unwrap_fs(desc.symlink_at(target.to_owned(), prefix))
 }
 
 ///|
@@ -688,7 +688,7 @@ pub async fn walk(
       }
     }
 
-    tg.spawn_bg(() => visit(path.to_string()), allow_failure~)
+    tg.spawn_bg(() => visit(path.to_owned()), allow_failure~)
     ()
   })
 }
