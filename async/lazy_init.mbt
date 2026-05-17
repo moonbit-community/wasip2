@@ -38,7 +38,7 @@ struct Lazy[X] {
 /// The function `f` will not be executed until `.wait()` is called.
 /// Multiple calls to `.wait()` will share the same computation result.
 pub fn[X] lazy_init(f : async () -> X) -> Lazy[X] {
-  { worker: f, waiters: Set::new(), state: Uninitialized }
+  { worker: f, waiters: Set([]), state: Uninitialized }
 }
 
 ///|

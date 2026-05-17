@@ -93,9 +93,9 @@ fn parse_url(url : String) -> UrlParts {
 
   // Check for https://
   if len >= 8 {
-    let prefix = String::from_array(chars[:8].to_array())
+    let prefix = String::from_array(chars[:8].to_owned())
     if prefix == "https://" {
-      let rest = String::from_array(chars[8:].to_array())
+      let rest = String::from_array(chars[8:].to_owned())
       let (authority, path) = split_authority_path(rest)
       return { scheme: Https, authority, path }
     }
@@ -103,9 +103,9 @@ fn parse_url(url : String) -> UrlParts {
 
   // Check for http://
   if len >= 7 {
-    let prefix = String::from_array(chars[:7].to_array())
+    let prefix = String::from_array(chars[:7].to_owned())
     if prefix == "http://" {
-      let rest = String::from_array(chars[7:].to_array())
+      let rest = String::from_array(chars[7:].to_owned())
       let (authority, path) = split_authority_path(rest)
       return { scheme: Http, authority, path }
     }
@@ -122,8 +122,8 @@ fn split_authority_path(s : String) -> (String, String) {
   for i = 0; i < chars.length(); i = i + 1 {
     if chars[i] == '/' {
       return (
-        String::from_array(chars[:i].to_array()),
-        String::from_array(chars[i:].to_array()),
+        String::from_array(chars[:i].to_owned()),
+        String::from_array(chars[i:].to_owned()),
       )
     }
   }
