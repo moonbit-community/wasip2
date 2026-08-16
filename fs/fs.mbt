@@ -857,12 +857,12 @@ pub fn File::write_at(
 }
 
 ///|
-pub impl @io.Reader for File with _get_internal_buffer(self) {
+pub impl @io.Reader for File with fn _get_internal_buffer(self) {
   self.read_buf
 }
 
 ///|
-pub impl @io.Reader for File with _direct_read(self, buf, offset~, max_len~) {
+pub impl @io.Reader for File with fn _direct_read(self, buf, offset~, max_len~) {
   let n = self.read_at(
     buf,
     position=self.read_pos.reinterpret_as_int64(),
@@ -876,7 +876,7 @@ pub impl @io.Reader for File with _direct_read(self, buf, offset~, max_len~) {
 }
 
 ///|
-pub impl @io.Writer for File with write_once(self, buf, offset~, len~) {
+pub impl @io.Writer for File with fn write_once(self, buf, offset~, len~) {
   let len = if len < 0 { 0 } else { len }
   if len == 0 {
     return 0
@@ -912,3 +912,69 @@ fn join_path(base : String, name : String) -> String {
     base + "/" + name
   }
 }
+
+///|
+pub extend FsError with Debug::{to_repr}
+
+///|
+pub extend FsError with Eq::{not_equal, equal}
+
+///|
+pub extend Timestamp with Debug::{to_repr}
+
+///|
+pub extend Timestamp with Eq::{not_equal, equal}
+
+///|
+pub extend Stat with Debug::{to_repr}
+
+///|
+pub extend Stat with Eq::{not_equal, equal}
+
+///|
+pub extend FileKind with Debug::{to_repr}
+
+///|
+pub extend FileKind with Eq::{not_equal, equal}
+
+///|
+pub extend Mode with Debug::{to_repr}
+
+///|
+pub extend Mode with Eq::{not_equal, equal}
+
+///|
+pub extend SyncMode with Debug::{to_repr}
+
+///|
+pub extend SyncMode with Eq::{not_equal, equal}
+
+///|
+pub extend DirEntry with Debug::{to_repr}
+
+///|
+pub extend DirEntry with Eq::{not_equal, equal}
+
+///|
+pub extend File with @peter-jerry-ye/wasip2/async/io.Reader::{
+  read,
+  read_some,
+  _direct_read,
+  drop,
+  read_all,
+  read_until,
+  read_exactly,
+  _get_internal_buffer,
+}
+
+///|
+pub extend File with @peter-jerry-ye/wasip2/async/io.Writer::{
+  write_once,
+  write,
+  write_reader,
+}
+
+///|
+#warnings("-deprecated")
+#deprecated("use `write` instead")
+pub extend File with @peter-jerry-ye/wasip2/async/io.Writer::{write_string}

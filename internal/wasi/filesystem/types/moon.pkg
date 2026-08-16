@@ -1,7 +1,7 @@
 import {
-  "peter-jerry-ye/wasip2/internal/wasi/clocks/wallClock" @wallClock,
-  "peter-jerry-ye/wasip2/internal/wasi/io/error" @error,
-  "peter-jerry-ye/wasip2/internal/wasi/io/streams" @streams,
+  "peter-jerry-ye/wasip2/internal/wasi/clocks/wallClock",
+  "peter-jerry-ye/wasip2/internal/wasi/io/error",
+  "peter-jerry-ye/wasip2/internal/wasi/io/streams",
 }
 
 warnings = "-44"

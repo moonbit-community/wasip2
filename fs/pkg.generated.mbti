@@ -74,12 +74,18 @@ pub(all) suberror FsError {
   UnexpectedEof
   Wasi(@types.ErrorCode)
 } derive(Eq, @debug.Debug)
+pub fn FsError::equal(Self, Self) -> Bool
+pub fn FsError::not_equal(Self, Self) -> Bool
+pub fn FsError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 pub(all) struct DirEntry {
   name : String
   kind : FileKind
 } derive(Eq, @debug.Debug)
+pub fn DirEntry::equal(Self, Self) -> Bool
+pub fn DirEntry::not_equal(Self, Self) -> Bool
+pub fn DirEntry::to_repr(Self) -> @debug.Repr
 
 type Directory
 pub fn Directory::close(Self) -> Unit
@@ -87,17 +93,30 @@ pub fn Directory::read_all(Self, include_hidden? : Bool, include_special? : Bool
 pub fn Directory::read_entries(Self, include_hidden? : Bool, include_special? : Bool) -> Array[DirEntry] raise FsError
 
 type File
+pub async fn File::_direct_read(Self, FixedArray[Byte], offset~ : Int, max_len~ : Int) -> Int
+pub fn File::_get_internal_buffer(Self) -> @io.ReaderBuffer
 pub fn File::as_dir(Self) -> Directory raise FsError
 pub fn File::atime(Self) -> (Int64, Int)
 pub fn File::close(Self) -> Unit
 pub fn File::ctime(Self) -> (Int64, Int)
+pub async fn File::drop(Self, Int) -> Int
 pub fn File::kind(Self) -> FileKind
 pub fn File::mtime(Self) -> (Int64, Int)
+pub async fn File::read(Self, FixedArray[Byte], offset? : Int, max_len? : Int) -> Int
+pub async fn File::read_all(Self) -> &@io.Data
 pub fn File::read_at(Self, FixedArray[Byte], position~ : Int64, offset? : Int, len? : Int) -> Int raise FsError
+pub async fn File::read_exactly(Self, Int) -> Bytes
 pub fn File::read_exactly_at(Self, Int, position~ : Int64) -> Bytes raise FsError
+pub async fn File::read_some(Self, max_len? : Int) -> Bytes?
+pub async fn File::read_until(Self, StringView) -> String?
 pub fn File::size(Self) -> Int64
 pub fn File::sync(Self, only_data? : Bool) -> Unit
+pub async fn File::write(Self, &@io.Data) -> Unit
 pub fn File::write_at(Self, BytesView, position~ : Int64) -> Unit raise FsError
+pub async fn File::write_once(Self, Bytes, offset~ : Int, len~ : Int) -> Int
+pub async fn File::write_reader(Self, &@io.Reader) -> Unit
+#deprecated
+pub async fn File::write_string(Self, StringView, encoding~ : @io.Encoding) -> Unit
 pub impl @io.Reader for File
 pub impl @io.Writer for File
 
@@ -111,12 +130,18 @@ pub(all) enum FileKind {
   BlockDevice
   CharDevice
 } derive(Eq, @debug.Debug)
+pub fn FileKind::equal(Self, Self) -> Bool
+pub fn FileKind::not_equal(Self, Self) -> Bool
+pub fn FileKind::to_repr(Self) -> @debug.Repr
 
 pub(all) enum Mode {
   ReadOnly
   WriteOnly
   ReadWrite
 } derive(Eq, @debug.Debug)
+pub fn Mode::equal(Self, Self) -> Bool
+pub fn Mode::not_equal(Self, Self) -> Bool
+pub fn Mode::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Preopen {
   dir : Directory
@@ -131,19 +156,27 @@ pub(all) struct Stat {
   mtime : Timestamp?
   ctime : Timestamp?
 } derive(Eq, @debug.Debug)
+pub fn Stat::equal(Self, Self) -> Bool
+pub fn Stat::not_equal(Self, Self) -> Bool
+pub fn Stat::to_repr(Self) -> @debug.Repr
 
 pub(all) enum SyncMode {
   NoSync
   Data
   Full
 } derive(Eq, @debug.Debug)
+pub fn SyncMode::equal(Self, Self) -> Bool
+pub fn SyncMode::not_equal(Self, Self) -> Bool
+pub fn SyncMode::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Timestamp {
   seconds : Int64
   nanoseconds : Int
 } derive(Eq, @debug.Debug)
+pub fn Timestamp::equal(Self, Self) -> Bool
+pub fn Timestamp::not_equal(Self, Self) -> Bool
+pub fn Timestamp::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
 // Traits
-

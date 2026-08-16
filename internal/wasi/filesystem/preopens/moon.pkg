@@ -1,5 +1,5 @@
 import {
-  "peter-jerry-ye/wasip2/internal/wasi/filesystem/types" @types,
+  "peter-jerry-ye/wasip2/internal/wasi/filesystem/types",
 }
 
 warnings = "-44"

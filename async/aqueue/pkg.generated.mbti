@@ -9,6 +9,7 @@ import {
 
 // Errors
 pub suberror QueueAlreadyClosed derive(@debug.Debug)
+pub fn QueueAlreadyClosed::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 pub(all) enum Kind {
@@ -29,4 +30,3 @@ pub fn[X] Queue::try_put(Self[X], X) -> Bool raise
 // Type aliases
 
 // Traits
-

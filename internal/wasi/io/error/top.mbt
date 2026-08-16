@@ -24,3 +24,9 @@ pub fn Error_::to_debug_string(self : Error_) -> String {
   mbt_ffi_free(return_area)
   return result
 }
+
+///|
+pub extend Error_ with Debug::{to_repr}
+
+///|
+pub extend Error_ with Eq::{not_equal, equal}

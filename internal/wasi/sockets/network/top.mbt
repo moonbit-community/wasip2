@@ -152,3 +152,45 @@ pub fn network_error_code(err : @error.Error_) -> ErrorCode? {
   mbt_ffi_free(return_area)
   return lifted
 }
+
+///|
+pub extend Network with Debug::{to_repr}
+
+///|
+pub extend Network with Eq::{not_equal, equal}
+
+///|
+pub extend ErrorCode with Debug::{to_repr}
+
+///|
+pub extend ErrorCode with Eq::{not_equal, equal}
+
+///|
+pub extend IpAddressFamily with Debug::{to_repr}
+
+///|
+pub extend IpAddressFamily with Eq::{not_equal, equal}
+
+///|
+pub extend IpAddress with Debug::{to_repr}
+
+///|
+pub extend IpAddress with Eq::{not_equal, equal}
+
+///|
+pub extend Ipv4SocketAddress with Debug::{to_repr}
+
+///|
+pub extend Ipv4SocketAddress with Eq::{not_equal, equal}
+
+///|
+pub extend Ipv6SocketAddress with Debug::{to_repr}
+
+///|
+pub extend Ipv6SocketAddress with Eq::{not_equal, equal}
+
+///|
+pub extend IpSocketAddress with Debug::{to_repr}
+
+///|
+pub extend IpSocketAddress with Eq::{not_equal, equal}

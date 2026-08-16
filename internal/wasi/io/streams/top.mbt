@@ -412,6 +412,24 @@ pub fn OutputStream::splice(
 }
 
 ///|
+pub extend StreamError with Debug::{to_repr}
+
+///|
+pub extend StreamError with Eq::{not_equal, equal}
+
+///|
+pub extend InputStream with Debug::{to_repr}
+
+///|
+pub extend InputStream with Eq::{not_equal, equal}
+
+///|
+pub extend OutputStream with Debug::{to_repr}
+
+///|
+pub extend OutputStream with Eq::{not_equal, equal}
+
+///|
 pub fn OutputStream::blocking_splice(
   self : OutputStream,
   src : InputStream,

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 ///|
-let event_loop : Map[Int, Coroutine] = {}
+let event_loop : Map[Int, Coroutine] = Map([])
 
 ///|
 pub async fn suspend_for_pollable(pollable : @poll.Pollable) -> Unit {

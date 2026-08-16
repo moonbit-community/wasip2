@@ -1,5 +1,5 @@
 import {
-  "peter-jerry-ye/wasip2/internal/wasi/io/error" @error,
+  "peter-jerry-ye/wasip2/internal/wasi/io/error",
 }
 
 warnings = "-44"

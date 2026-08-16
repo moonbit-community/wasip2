@@ -16,12 +16,24 @@ pub let stdout : Output
 
 // Types and methods
 type Input
+pub async fn Input::_direct_read(Self, FixedArray[Byte], offset~ : Int, max_len~ : Int) -> Int
+pub fn Input::_get_internal_buffer(Self) -> @io.ReaderBuffer
+pub async fn Input::drop(Self, Int) -> Int
+pub async fn Input::read(Self, FixedArray[Byte], offset? : Int, max_len? : Int) -> Int
+pub async fn Input::read_all(Self) -> &@io.Data
+pub async fn Input::read_exactly(Self, Int) -> Bytes
+pub async fn Input::read_some(Self, max_len? : Int) -> Bytes?
+pub async fn Input::read_until(Self, StringView) -> String?
 pub impl @io.Reader for Input
 
 type Output
+pub async fn Output::write(Self, &@io.Data) -> Unit
+pub async fn Output::write_once(Self, Bytes, offset~ : Int, len~ : Int) -> Int
+pub async fn Output::write_reader(Self, &@io.Reader) -> Unit
+#deprecated
+pub async fn Output::write_string(Self, StringView, encoding~ : @io.Encoding) -> Unit
 pub impl @io.Writer for Output
 
 // Type aliases
 
 // Traits
-

@@ -27,3 +27,9 @@ pub fn resolution() -> Datetime {
     nanoseconds: mbt_ffi_load32(return_area + 8).reinterpret_as_uint(),
   }
 }
+
+///|
+pub extend Datetime with Debug::{to_repr}
+
+///|
+pub extend Datetime with Eq::{not_equal, equal}

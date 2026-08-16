@@ -10,3 +10,9 @@ pub fn TerminalInput::drop(self : TerminalInput) -> Unit {
   let TerminalInput(resource) = self
   wasmImportResourceDropTerminalInput(resource)
 }
+
+///|
+pub extend TerminalInput with Debug::{to_repr}
+
+///|
+pub extend TerminalInput with Eq::{not_equal, equal}

@@ -68,7 +68,7 @@ pub(all) suberror HttpError {
 }
 
 ///|
-impl Show for HttpError with output(self, logger) {
+impl Show for HttpError with fn output(self, logger) {
   match self {
     RequestFailed(code) =>
       logger.write_string(
@@ -132,7 +132,7 @@ fn split_authority_path(s : String) -> (String, String) {
 
 ///|
 fn extract_headers(fields : @types.Fields) -> Map[String, String] {
-  let result : Map[String, String] = {}
+  let result : Map[String, String] = Map([])
   for entry in fields.entries() {
     let (name, value) = entry
     result[name] = String::from_array(

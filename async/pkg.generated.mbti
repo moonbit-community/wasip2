@@ -42,8 +42,11 @@ pub async fn[X] with_timeout_opt(Int, async () -> X) -> X?
 // Errors
 #deprecated
 pub suberror AlreadyTerminated derive(@debug.Debug)
+#deprecated
+pub fn AlreadyTerminated::to_repr(Self) -> @debug.Repr
 
 pub suberror TimeoutError derive(@debug.Debug)
+pub fn TimeoutError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 type Lazy[X]
@@ -72,4 +75,3 @@ pub using @aqueue {type Queue}
 pub using @semaphore {type Semaphore}
 
 // Traits
-

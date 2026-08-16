@@ -513,7 +513,7 @@ async fn test_all_basic() -> Unit {
   if results != [1, 2, 3] {
     @stdio.stdout.write("FAILED\n")
     @stdio.stdout.write("expected: [1, 2, 3]\n")
-    @stdio.stdout.write("got: \{to_repr(results)}\n")
+    @stdio.stdout.write("got: \{Repr(results)}\n")
     panic()
   }
   @stdio.stdout.write("ok\n")
@@ -555,7 +555,7 @@ async fn test_all_preserves_order() -> Unit {
   if results != [0, 1, 2] {
     @stdio.stdout.write("FAILED (results)\n")
     @stdio.stdout.write("expected: [0, 1, 2]\n")
-    @stdio.stdout.write("got: \{to_repr(results)}\n")
+    @stdio.stdout.write("got: \{Repr(results)}\n")
     panic()
   }
   @stdio.stdout.write("ok\n")
@@ -996,3 +996,6 @@ async fn test_fs_write_read_remove() -> Unit {
 
   @stdio.stdout.write("ok\n")
 }
+
+///|
+pub extend FatalError with Debug::{to_repr}
