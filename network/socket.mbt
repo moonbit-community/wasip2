@@ -19,7 +19,7 @@ pub(all) suberror SocketError {
 }
 
 ///|
-impl Show for SocketError with output(self, logger) {
+impl Show for SocketError with fn output(self, logger) {
   match self {
     NetworkError(code) =>
       logger.write_string(

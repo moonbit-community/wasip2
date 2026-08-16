@@ -1188,3 +1188,75 @@ pub fn filesystem_error_code(err : @error.Error_) -> ErrorCode? {
   mbt_ffi_free(return_area)
   return lifted
 }
+
+///|
+pub extend DescriptorType with Debug::{to_repr}
+
+///|
+pub extend DescriptorType with Eq::{not_equal, equal}
+
+///|
+pub extend DescriptorFlags with Debug::{to_repr}
+
+///|
+pub extend DescriptorFlags with Eq::{not_equal, equal}
+
+///|
+pub extend PathFlags with Debug::{to_repr}
+
+///|
+pub extend PathFlags with Eq::{not_equal, equal}
+
+///|
+pub extend OpenFlags with Debug::{to_repr}
+
+///|
+pub extend OpenFlags with Eq::{not_equal, equal}
+
+///|
+pub extend DescriptorStat with Debug::{to_repr}
+
+///|
+pub extend DescriptorStat with Eq::{not_equal, equal}
+
+///|
+pub extend NewTimestamp with Debug::{to_repr}
+
+///|
+pub extend NewTimestamp with Eq::{not_equal, equal}
+
+///|
+pub extend DirectoryEntry with Debug::{to_repr}
+
+///|
+pub extend DirectoryEntry with Eq::{not_equal, equal}
+
+///|
+pub extend ErrorCode with Debug::{to_repr}
+
+///|
+pub extend ErrorCode with Eq::{not_equal, equal}
+
+///|
+pub extend Advice with Debug::{to_repr}
+
+///|
+pub extend Advice with Eq::{not_equal, equal}
+
+///|
+pub extend MetadataHashValue with Debug::{to_repr}
+
+///|
+pub extend MetadataHashValue with Eq::{not_equal, equal}
+
+///|
+pub extend Descriptor with Debug::{to_repr}
+
+///|
+pub extend Descriptor with Eq::{not_equal, equal}
+
+///|
+pub extend DirectoryEntryStream with Debug::{to_repr}
+
+///|
+pub extend DirectoryEntryStream with Eq::{not_equal, equal}

@@ -247,3 +247,8 @@ pub fn[X] TaskGroup::return_immediately(
   }
   raise @ev.Cancelled::Cancelled
 }
+
+///|
+#warnings("-deprecated")
+#deprecated("this error is no longer emitted")
+pub extend AlreadyTerminated with Debug::{to_repr}

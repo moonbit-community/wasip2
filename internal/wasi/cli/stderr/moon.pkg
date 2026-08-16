@@ -1,5 +1,5 @@
 import {
-  "peter-jerry-ye/wasip2/internal/wasi/io/streams" @streams,
+  "peter-jerry-ye/wasip2/internal/wasi/io/streams",
 }
 
 warnings = "-44"

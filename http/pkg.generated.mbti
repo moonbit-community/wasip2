@@ -47,4 +47,3 @@ pub(all) enum Scheme {
 // Type aliases
 
 // Traits
-

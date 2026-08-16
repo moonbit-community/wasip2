@@ -109,3 +109,9 @@ pub fn resolve_addresses(
   mbt_ffi_free(return_area)
   return lifted
 }
+
+///|
+pub extend ResolveAddressStream with Debug::{to_repr}
+
+///|
+pub extend ResolveAddressStream with Eq::{not_equal, equal}

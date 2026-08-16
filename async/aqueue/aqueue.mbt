@@ -302,3 +302,6 @@ pub fn[X] Queue::close(
     self.buffer.clear()
   }
 }
+
+///|
+pub extend QueueAlreadyClosed with Debug::{to_repr}

@@ -42,3 +42,9 @@ pub fn poll(in_ : Array[Pollable]) -> FixedArray[UInt] {
   mbt_ffi_free(return_area)
   return result
 }
+
+///|
+pub extend Pollable with Debug::{to_repr}
+
+///|
+pub extend Pollable with Eq::{not_equal, equal}

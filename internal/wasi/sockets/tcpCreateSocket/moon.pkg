@@ -1,6 +1,6 @@
 import {
-  "peter-jerry-ye/wasip2/internal/wasi/sockets/network" @network,
-  "peter-jerry-ye/wasip2/internal/wasi/sockets/tcp" @tcp,
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/network",
+  "peter-jerry-ye/wasip2/internal/wasi/sockets/tcp",
 }
 
 warnings = "-44"

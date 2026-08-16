@@ -31,11 +31,16 @@ pub async fn suspend_for_pollable(@poll.Pollable) -> Unit
 
 // Errors
 pub(all) suberror Cancelled derive(@debug.Debug)
+pub fn Cancelled::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 type Coroutine
 pub fn Coroutine::cancel(Self) -> Unit
 pub fn Coroutine::check_error(Self) -> Unit raise
+pub fn Coroutine::equal(Self, Self) -> Bool
+pub fn Coroutine::hash(Self) -> Int
+pub fn Coroutine::hash_combine(Self, Hasher) -> Unit
+pub fn Coroutine::not_equal(Self, Self) -> Bool
 pub async fn Coroutine::wait(Self) -> Unit
 pub fn Coroutine::wake(Self) -> Unit
 pub impl Eq for Coroutine
@@ -44,4 +49,3 @@ pub impl Hash for Coroutine
 // Type aliases
 
 // Traits
-

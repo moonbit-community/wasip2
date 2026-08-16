@@ -700,3 +700,33 @@ pub fn OutgoingDatagramStream::subscribe(
   let result : Int = wasmImportMethodOutgoingDatagramStreamSubscribe(handle)
   return @poll.Pollable::Pollable(result)
 }
+
+///|
+pub extend IncomingDatagram with Debug::{to_repr}
+
+///|
+pub extend IncomingDatagram with Eq::{not_equal, equal}
+
+///|
+pub extend OutgoingDatagram with Debug::{to_repr}
+
+///|
+pub extend OutgoingDatagram with Eq::{not_equal, equal}
+
+///|
+pub extend UdpSocket with Debug::{to_repr}
+
+///|
+pub extend UdpSocket with Eq::{not_equal, equal}
+
+///|
+pub extend IncomingDatagramStream with Debug::{to_repr}
+
+///|
+pub extend IncomingDatagramStream with Eq::{not_equal, equal}
+
+///|
+pub extend OutgoingDatagramStream with Debug::{to_repr}
+
+///|
+pub extend OutgoingDatagramStream with Eq::{not_equal, equal}

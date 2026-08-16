@@ -59,3 +59,6 @@ pub async fn[X] with_timeout_opt(time : Int, f : async () -> X) -> X? {
     Some(f())
   })
 }
+
+///|
+pub extend TimeoutError with Debug::{to_repr}

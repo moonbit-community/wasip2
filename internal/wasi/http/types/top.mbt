@@ -2984,3 +2984,111 @@ pub fn http_error_code(err : @error.Error_) -> ErrorCode? {
   mbt_ffi_free(return_area)
   return lifted30
 }
+
+///|
+pub extend Method with Debug::{to_repr}
+
+///|
+pub extend Method with Eq::{not_equal, equal}
+
+///|
+pub extend Scheme with Debug::{to_repr}
+
+///|
+pub extend Scheme with Eq::{not_equal, equal}
+
+///|
+pub extend DnsErrorPayload with Debug::{to_repr}
+
+///|
+pub extend DnsErrorPayload with Eq::{not_equal, equal}
+
+///|
+pub extend TlsAlertReceivedPayload with Debug::{to_repr}
+
+///|
+pub extend TlsAlertReceivedPayload with Eq::{not_equal, equal}
+
+///|
+pub extend FieldSizePayload with Debug::{to_repr}
+
+///|
+pub extend FieldSizePayload with Eq::{not_equal, equal}
+
+///|
+pub extend ErrorCode with Debug::{to_repr}
+
+///|
+pub extend ErrorCode with Eq::{not_equal, equal}
+
+///|
+pub extend HeaderError with Debug::{to_repr}
+
+///|
+pub extend HeaderError with Eq::{not_equal, equal}
+
+///|
+pub extend Fields with Debug::{to_repr}
+
+///|
+pub extend Fields with Eq::{not_equal, equal}
+
+///|
+pub extend IncomingRequest with Debug::{to_repr}
+
+///|
+pub extend IncomingRequest with Eq::{not_equal, equal}
+
+///|
+pub extend OutgoingRequest with Debug::{to_repr}
+
+///|
+pub extend OutgoingRequest with Eq::{not_equal, equal}
+
+///|
+pub extend RequestOptions with Debug::{to_repr}
+
+///|
+pub extend RequestOptions with Eq::{not_equal, equal}
+
+///|
+pub extend ResponseOutparam with Debug::{to_repr}
+
+///|
+pub extend ResponseOutparam with Eq::{not_equal, equal}
+
+///|
+pub extend IncomingResponse with Debug::{to_repr}
+
+///|
+pub extend IncomingResponse with Eq::{not_equal, equal}
+
+///|
+pub extend IncomingBody with Debug::{to_repr}
+
+///|
+pub extend IncomingBody with Eq::{not_equal, equal}
+
+///|
+pub extend FutureTrailers with Debug::{to_repr}
+
+///|
+pub extend FutureTrailers with Eq::{not_equal, equal}
+
+///|
+pub extend OutgoingResponse with Debug::{to_repr}
+
+///|
+pub extend OutgoingResponse with Eq::{not_equal, equal}
+
+///|
+pub extend OutgoingBody with Debug::{to_repr}
+
+///|
+pub extend OutgoingBody with Eq::{not_equal, equal}
+
+///|
+pub extend FutureIncomingResponse with Debug::{to_repr}
+
+///|
+pub extend FutureIncomingResponse with Eq::{not_equal, equal}

@@ -10,3 +10,9 @@ pub fn TerminalOutput::drop(self : TerminalOutput) -> Unit {
   let TerminalOutput(resource) = self
   wasmImportResourceDropTerminalOutput(resource)
 }
+
+///|
+pub extend TerminalOutput with Debug::{to_repr}
+
+///|
+pub extend TerminalOutput with Eq::{not_equal, equal}

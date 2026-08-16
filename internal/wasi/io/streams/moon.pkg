@@ -1,6 +1,6 @@
 import {
-  "peter-jerry-ye/wasip2/internal/wasi/io/error" @error,
-  "peter-jerry-ye/wasip2/internal/wasi/io/poll" @poll,
+  "peter-jerry-ye/wasip2/internal/wasi/io/error",
+  "peter-jerry-ye/wasip2/internal/wasi/io/poll",
 }
 
 warnings = "-44"

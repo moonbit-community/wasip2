@@ -19,7 +19,7 @@ struct Input {
 }
 
 ///|
-pub impl @io.Reader for Input with _direct_read(self, buf, offset~, max_len~) {
+pub impl @io.Reader for Input with fn _direct_read(self, buf, offset~, max_len~) {
   let read = self.io.read(max_len.to_uint64()).unwrap_or_error() catch {
       @streams.StreamError::Closed => return 0
       e => raise e
@@ -29,7 +29,7 @@ pub impl @io.Reader for Input with _direct_read(self, buf, offset~, max_len~) {
 }
 
 ///|
-pub impl @io.Reader for Input with _get_internal_buffer(self) {
+pub impl @io.Reader for Input with fn _get_internal_buffer(self) {
   self.read_buf
 }
 
@@ -37,7 +37,7 @@ pub impl @io.Reader for Input with _get_internal_buffer(self) {
 struct Output(@streams.OutputStream)
 
 ///|
-pub impl @io.Writer for Output with write_once(self, buf, offset~, len~) {
+pub impl @io.Writer for Output with fn write_once(self, buf, offset~, len~) {
   let mut can_write = self.0.check_write().unwrap_or_error()
   if can_write == 0 {
     @ev.suspend_for_pollable(self.0.subscribe())
@@ -69,3 +69,27 @@ pub let stdout : Output = @stdout.get_stdout()
 /// Using this value will result in standard error being set to non-blocking mode.
 /// The standard error will be reset to its original state after the program exits.
 pub let stderr : Output = @stderr.get_stderr()
+
+///|
+pub extend Input with @peter-jerry-ye/wasip2/async/io.Reader::{
+  read,
+  read_some,
+  _direct_read,
+  drop,
+  read_all,
+  read_until,
+  read_exactly,
+  _get_internal_buffer,
+}
+
+///|
+pub extend Output with @peter-jerry-ye/wasip2/async/io.Writer::{
+  write_once,
+  write,
+  write_reader,
+}
+
+///|
+#warnings("-deprecated")
+#deprecated("use `write` instead")
+pub extend Output with @peter-jerry-ye/wasip2/async/io.Writer::{write_string}

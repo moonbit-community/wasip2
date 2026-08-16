@@ -91,9 +91,9 @@ pub fn PipeWrite::close(self : PipeWrite) -> Unit {
 ///|
 /// Read data from a pipe. The data come from the write end of the pipe.
 /// Data transfer only happen when reader and writer are present at the same time.
-pub impl Reader for PipeRead with _direct_read(self, dst, offset~, max_len~) {
+pub impl Reader for PipeRead with fn _direct_read(self, dst, offset~, max_len~) {
   let PipeRead(self) = self
-  guard self.reader is NoReader
+  guard! self.reader is NoReader
   match self.writer {
     NoWriter => {
       let coro = @ev.current_coroutine()
@@ -101,7 +101,7 @@ pub impl Reader for PipeRead with _direct_read(self, dst, offset~, max_len~) {
       self.reader = reader
       defer (if self.reader is HasReader(_) { self.reader = NoReader })
       @ev.suspend()
-      guard reader is HasReader(result~, ..)
+      guard! reader is HasReader(result~, ..)
       result
     }
     WriteEndClosed => 0
@@ -117,7 +117,7 @@ pub impl Reader for PipeRead with _direct_read(self, dst, offset~, max_len~) {
 }
 
 ///|
-pub impl Reader for PipeRead with _get_internal_buffer(self) {
+pub impl Reader for PipeRead with fn _get_internal_buffer(self) {
   let PipeRead(self) = self
   self.read_buf
 }
@@ -130,9 +130,9 @@ pub suberror PipeClosed derive(Debug, ToJson)
 ///|
 /// Write data to a pipe. The data can be read from the read end of the pipe.
 /// Data transfer only happen when reader and writer are present at the same time.
-pub impl Writer for PipeWrite with write_once(self, buf, offset~, len~) {
+pub impl Writer for PipeWrite with fn write_once(self, buf, offset~, len~) {
   let PipeWrite(self) = self
-  guard self.writer is NoWriter
+  guard! self.writer is NoWriter
   match self.reader {
     NoReader => {
       let coro = @ev.current_coroutine()
@@ -140,7 +140,7 @@ pub impl Writer for PipeWrite with write_once(self, buf, offset~, len~) {
       self.writer = writer
       defer (if self.writer is HasWriter(_) { self.writer = NoWriter })
       @ev.suspend()
-      guard writer is HasWriter(result~, ..)
+      guard! writer is HasWriter(result~, ..)
       guard result > 0 else { raise PipeClosed }
       result
     }
@@ -163,3 +163,29 @@ pub impl Writer for PipeWrite with write_once(self, buf, offset~, len~) {
     }
   }
 }
+
+///|
+pub extend PipeRead with Reader::{
+  read,
+  read_some,
+  _direct_read,
+  drop,
+  read_all,
+  read_until,
+  read_exactly,
+  _get_internal_buffer,
+}
+
+///|
+pub extend PipeClosed with Debug::{to_repr}
+
+///|
+pub extend PipeClosed with ToJson::{to_json}
+
+///|
+pub extend PipeWrite with Writer::{write_once, write, write_reader}
+
+///|
+#warnings("-deprecated")
+#deprecated("use `write` instead")
+pub extend PipeWrite with Writer::{write_string}

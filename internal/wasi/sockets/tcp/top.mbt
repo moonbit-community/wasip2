@@ -104,6 +104,18 @@ pub fn TcpSocket::start_bind(
 }
 
 ///|
+pub extend ShutdownType with Debug::{to_repr}
+
+///|
+pub extend ShutdownType with Eq::{not_equal, equal}
+
+///|
+pub extend TcpSocket with Debug::{to_repr}
+
+///|
+pub extend TcpSocket with Eq::{not_equal, equal}
+
+///|
 pub fn TcpSocket::finish_bind(
   self : TcpSocket,
 ) -> Result[Unit, @network.ErrorCode] {
